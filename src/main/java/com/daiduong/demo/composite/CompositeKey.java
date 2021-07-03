@@ -1,4 +1,4 @@
-package com.daiduong.composite;
+package com.daiduong.demo.composite;
 
 import java.io.Serializable;
 

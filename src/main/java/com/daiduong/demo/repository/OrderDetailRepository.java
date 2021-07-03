@@ -1,6 +1,6 @@
 package com.daiduong.demo.repository;
 
-import com.daiduong.composite.CompositeKey;
+import com.daiduong.demo.composite.CompositeKey;
 import com.daiduong.demo.entity.OrderDetailEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;

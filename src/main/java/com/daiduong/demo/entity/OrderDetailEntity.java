@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.daiduong.composite.CompositeKey;
+import com.daiduong.demo.composite.CompositeKey;
 
 @Entity
 @Table(name = "category")
