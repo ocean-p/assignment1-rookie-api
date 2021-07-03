@@ -1,6 +1,6 @@
 package com.daiduong.demo.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,10 +22,10 @@ public class CategoryEntity {
     private String description;
 
     @Column(name = "create_date")
-    private Date createDate;
+    private LocalDate createDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private LocalDate updateDate;
 
     @Column(name = "is_delete")
     private boolean isDeleted;
@@ -33,7 +33,7 @@ public class CategoryEntity {
     public CategoryEntity() {
     }
 
-    public CategoryEntity(int id, String name, String description, Date createDate, Date updateDate,
+    public CategoryEntity(int id, String name, String description, LocalDate createDate, LocalDate updateDate,
             boolean isDeleted) {
         this.id = id;
         this.name = name;
@@ -67,19 +67,19 @@ public class CategoryEntity {
         this.description = description;
     }
 
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate() {
+    public LocalDate getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDate updateDate) {
         this.updateDate = updateDate;
     }
 
