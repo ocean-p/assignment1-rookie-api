@@ -1,6 +1,6 @@
 package com.daiduong.demo.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,10 +34,10 @@ public class ProductEntity {
     private int averageRate;
 
     @Column(name = "create_date")
-    private Date createDate;
+    private LocalDate createDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private LocalDate updateDate;
 
     @Column(name = "category_id")
     private int categoryId;
@@ -49,7 +49,7 @@ public class ProductEntity {
     }
 
     public ProductEntity(int id, String name, float price, String image, int quantity, String description,
-            int averageRate, Date createDate, Date updateDate, int categoryId, boolean isDeleted) {
+            int averageRate, LocalDate createDate, LocalDate updateDate, int categoryId, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -119,19 +119,19 @@ public class ProductEntity {
         this.averageRate = averageRate;
     }
 
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate() {
+    public LocalDate getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDate updateDate) {
         this.updateDate = updateDate;
     }
 

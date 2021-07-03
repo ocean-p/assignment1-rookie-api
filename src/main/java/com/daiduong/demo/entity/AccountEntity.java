@@ -1,6 +1,6 @@
 package com.daiduong.demo.entity;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,10 +28,10 @@ public class AccountEntity {
     private String address;
 
     @Column(name = "create_date")
-    private Date createDate;
+    private LocalDate createDate;
 
     @Column(name = "update_date")
-    private Date updateDate;
+    private LocalDate updateDate;
 
     @Column(name = "role_id")
     private int roleId;
@@ -43,7 +43,7 @@ public class AccountEntity {
     }
 
     public AccountEntity(String username, String password, String fullName, String phone, String address,
-            Date createDate, Date updateDate, int roleId, boolean isDeleted) {
+            LocalDate createDate, LocalDate updateDate, int roleId, boolean isDeleted) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -95,19 +95,19 @@ public class AccountEntity {
         this.address = address;
     }
 
-    public Date getCreateDate() {
+    public LocalDate getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(LocalDate createDate) {
         this.createDate = createDate;
     }
 
-    public Date getUpdateDate() {
+    public LocalDate getUpdateDate() {
         return updateDate;
     }
 
-    public void setUpdateDate(Date updateDate) {
+    public void setUpdateDate(LocalDate updateDate) {
         this.updateDate = updateDate;
     }
 
