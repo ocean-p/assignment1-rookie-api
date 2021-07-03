@@ -1,15 +1,17 @@
 package com.daiduong.demo.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
+
+import com.daiduong.composite.CompositeKey;
 
 @Entity
 @Table(name = "category")
-public class OrderDetailEntity implements Serializable{
+@IdClass(CompositeKey.class)
+public class OrderDetailEntity {
     
     @Id
     @Column(name = "order_id")
