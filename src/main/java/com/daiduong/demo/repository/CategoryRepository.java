@@ -1,5 +1,12 @@
 package com.daiduong.demo.repository;
 
-public interface CategoryRepository {
+import com.daiduong.demo.entity.CategoryEntity;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CategoryRepository extends 
+                JpaRepository<CategoryEntity, Integer> {
     
 }
