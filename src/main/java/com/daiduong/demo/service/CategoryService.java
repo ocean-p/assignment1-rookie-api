@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.daiduong.demo.entity.CategoryEntity;
+import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class CategoryService {
     // upadate category
     public CategoryEntity updateCategory(int id, CategoryEntity category) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
-            .orElseThrow(() -> new IllegalStateException(
+            .orElseThrow(() -> new ApiRequestException(
                 "The category with id:" + id + " does not exist"
             ));
 
@@ -68,7 +69,7 @@ public class CategoryService {
     // delete category
     public CategoryEntity deleteCategory(int id){
         CategoryEntity categoryEntity = categoryRepository.findById(id)
-            .orElseThrow(() -> new IllegalStateException(
+            .orElseThrow(() -> new ApiRequestException(
                 "The category with id:" + id + " does not exist"
             ));
         if(categoryEntity.isDeleted() == false){
