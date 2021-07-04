@@ -15,10 +15,12 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    // get all category
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
     }
 
+    // add new category
     public CategoryEntity addCategory(CategoryEntity category){
         int maxId = categoryRepository.findMaxId();
         category.setId(maxId + 1);
@@ -26,5 +28,53 @@ public class CategoryService {
         category.setCreateDate(currentDate);
         category.setUpdateDate(currentDate);
         return categoryRepository.save(category);
+    }
+
+    // upadate category
+    public CategoryEntity updateCategory(int id, CategoryEntity category) {
+        CategoryEntity categoryEntity = categoryRepository.findById(id)
+            .orElseThrow(() -> new IllegalStateException(
+                "The category with id:" + id + " does not exist"
+            ));
+
+        String newName = category.getName();
+        String newDes = category.getDescription();
+        String oldName = categoryEntity.getName();
+        String oldDes = categoryEntity.getDescription();
+        boolean isUpdate = false;
+
+        if(newName != null && newName.length() > 0 && 
+            !newName.equals(oldName))
+        {
+            categoryEntity.setName(newName);
+            isUpdate = true;
+        }    
+
+        if(newDes != null && newDes.length() > 0 &&
+            !newDes.equals(oldDes))
+        {
+            categoryEntity.setDescription(newDes);
+            isUpdate = true;
+        }
+        
+        if(isUpdate)
+        {
+            categoryEntity.setUpdateDate(LocalDate.now());
+        }
+
+        return categoryRepository.save(categoryEntity);
+    }
+
+    // delete category
+    public CategoryEntity deleteCategory(int id){
+        CategoryEntity categoryEntity = categoryRepository.findById(id)
+            .orElseThrow(() -> new IllegalStateException(
+                "The category with id:" + id + " does not exist"
+            ));
+        if(categoryEntity.isDeleted() == false){
+            categoryEntity.setDeleted(true);
+            categoryEntity.setUpdateDate(LocalDate.now());
+        }    
+        return categoryRepository.save(categoryEntity);     
     }
 }
