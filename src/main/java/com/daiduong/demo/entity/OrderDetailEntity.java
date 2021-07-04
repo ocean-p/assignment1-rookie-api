@@ -9,7 +9,7 @@ import javax.persistence.Table;
 import com.daiduong.demo.composite.OrderDetailCompositeKey;
 
 @Entity
-@Table(name = "category")
+@Table(name = "orderdetail")
 @IdClass(OrderDetailCompositeKey.class)
 public class OrderDetailEntity {
     
