@@ -3,14 +3,14 @@ package com.daiduong.demo.composite;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class CompositeKey implements Serializable{
+public class OrderDetailCompositeKey implements Serializable{
     private int orderId;
     private int productId;
     
-    public CompositeKey() {
+    public OrderDetailCompositeKey() {
     }
 
-    public CompositeKey(int orderId, int productId) {
+    public OrderDetailCompositeKey(int orderId, int productId) {
         this.orderId = orderId;
         this.productId = productId;
     }
@@ -40,7 +40,7 @@ public class CompositeKey implements Serializable{
     public boolean equals(Object o) {
        if(this == o) return true;
        if(o == null || getClass() != o.getClass()) return false;
-       CompositeKey ck = (CompositeKey) o;
+       OrderDetailCompositeKey ck = (OrderDetailCompositeKey) o;
        return (orderId == ck.orderId) && (productId == ck.productId);
     }
 

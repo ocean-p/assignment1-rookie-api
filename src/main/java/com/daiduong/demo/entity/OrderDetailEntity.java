@@ -6,11 +6,11 @@ import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.daiduong.demo.composite.CompositeKey;
+import com.daiduong.demo.composite.OrderDetailCompositeKey;
 
 @Entity
 @Table(name = "category")
-@IdClass(CompositeKey.class)
+@IdClass(OrderDetailCompositeKey.class)
 public class OrderDetailEntity {
     
     @Id
