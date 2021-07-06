@@ -1,6 +1,7 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
@@ -27,10 +28,13 @@ public class ProductService {
         int quantity = product.getQuantity();
         int categoryId = product.getCategoryId();
 
-        CategoryEntity categoryEntity = categoryRepository.findById(categoryId).
-                        orElseThrow(() -> new ApiRequestException(
-                            "Fail to add product - The categoryId: " + categoryId + " does not exist"
-                        ));
+        Optional<CategoryEntity> categoryEntity = categoryRepository.findById(categoryId);
+        if(!categoryEntity.isPresent()){
+            throw new ApiRequestException("Fail to add product - The categoryId: " 
+                                            + categoryId 
+                                            + " does not exist");
+        }
+
         if(name == null || name.length() == 0 || price <= 0 || quantity <= 0){
             throw new ApiRequestException("Fail to add product - try again");
         }
