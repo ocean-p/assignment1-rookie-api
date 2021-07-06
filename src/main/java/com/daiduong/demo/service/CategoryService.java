@@ -23,8 +23,13 @@ public class CategoryService {
 
     // add new category
     public CategoryEntity addCategory(CategoryEntity category){
-        int maxId = categoryRepository.findMaxId();
-        category.setId(maxId + 1);
+        if(categoryRepository.count() < 1){
+            category.setId(1);
+        }
+        else{
+            int maxId = categoryRepository.findMaxId();
+            category.setId(maxId + 1);
+        }
         LocalDate currentDate = LocalDate.now();
         category.setCreateDate(currentDate);
         category.setUpdateDate(currentDate);
