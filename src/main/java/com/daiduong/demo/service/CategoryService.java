@@ -23,6 +23,11 @@ public class CategoryService {
 
     // add new category
     public CategoryEntity addCategory(CategoryEntity category){
+        String name = category.getName();
+        if(name == null || name.length() == 0){
+            throw new ApiRequestException("Fail to add category - Name not null or empty");
+        }
+
         if(categoryRepository.count() < 1){
             category.setId(1);
         }
