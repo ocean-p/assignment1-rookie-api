@@ -25,6 +25,7 @@ public class HomeController {
     @Autowired
     private ProductService productService;
 
+    /** BEGIN: CATEGORY */
     @GetMapping("/admin/category")
     public List<CategoryEntity> getAllCategories() {
         return categoryService.getAllCategories();
@@ -46,9 +47,29 @@ public class HomeController {
     public CategoryEntity deleteCategory(@PathVariable("id") int id){
         return categoryService.deleteCategory(id);
     }
+    /** END: CATEGORY */
 
+    /** BEGIN: PRODUCT */
     @PostMapping("/admin/product/new")
     public ProductEntity addProduct(@RequestBody ProductEntity entity){
         return productService.addProduct(entity);
     }
+
+    @GetMapping("/admin/product")
+    public List<ProductEntity> getAllProducts(){
+        return productService.getAllProducts();
+    }
+
+    @PutMapping("/admin/product/new/{id}")
+    public ProductEntity updateProduct(@PathVariable("id") int id, 
+                                       @RequestBody ProductEntity entity)
+    {
+        return productService.updateProduct(id, entity);
+    }
+
+    @DeleteMapping("/admin/product/deletion/{id}")
+    public ProductEntity deleteProduct(@PathVariable("id") int id){
+        return productService.deleteProduct(id);
+    }
+    /** END: PRODUCT */
 }
