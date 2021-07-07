@@ -33,8 +33,8 @@ public class AccountEntity {
     @Column(name = "update_date")
     private LocalDate updateDate;
 
-    @Column(name = "role_id")
-    private int roleId;
+    @Column(name = "role")
+    private String role;
 
     @Column(name = "is_delete")
     private boolean isDeleted;
@@ -43,7 +43,7 @@ public class AccountEntity {
     }
 
     public AccountEntity(String username, String password, String fullName, String phone, String address,
-            LocalDate createDate, LocalDate updateDate, int roleId, boolean isDeleted) {
+            LocalDate createDate, LocalDate updateDate, String role, boolean isDeleted) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -51,7 +51,7 @@ public class AccountEntity {
         this.address = address;
         this.createDate = createDate;
         this.updateDate = updateDate;
-        this.roleId = roleId;
+        this.role = role;
         this.isDeleted = isDeleted;
     }
 
@@ -111,12 +111,12 @@ public class AccountEntity {
         this.updateDate = updateDate;
     }
 
-    public int getRoleId() {
-        return roleId;
+    public String getRole() {
+        return role;
     }
 
-    public void setRoleId(int roleId) {
-        this.roleId = roleId;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public boolean isDeleted() {
