@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.daiduong.demo.entity.AccountEntity;
 
-public interface IAccountService {
+import org.springframework.security.core.userdetails.UserDetailsService;
+
+public interface IAccountService extends UserDetailsService{
     // add account
     public AccountEntity addAccount(AccountEntity account);
 
@@ -16,4 +18,7 @@ public interface IAccountService {
 
     // delete account
     public AccountEntity deleteAccount(String username);
+
+    // register account
+    public String registerAccount(AccountEntity account);
 }

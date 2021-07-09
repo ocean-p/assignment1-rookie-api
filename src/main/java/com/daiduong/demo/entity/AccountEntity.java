@@ -1,15 +1,21 @@
 package com.daiduong.demo.entity;
 
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 @Entity
 @Table(name = "account")
-public class AccountEntity {
+public class AccountEntity implements UserDetails{
     
     @Id
     @Column(name = "username")
@@ -125,6 +131,32 @@ public class AccountEntity {
 
     public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
+        return Collections.singletonList(authority);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !isDeleted;
     }
 
 }

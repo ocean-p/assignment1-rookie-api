@@ -10,6 +10,9 @@ import com.daiduong.demo.repository.AccountRepository;
 import com.daiduong.demo.service.interfaces.IAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +20,9 @@ public class AccountService implements IAccountService{
     
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public AccountEntity addAccount(AccountEntity account) {
@@ -60,6 +66,9 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException("Role must be admin or customer");
         }
         
+        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
+        account.setPassword(encodedPassword);
+
         LocalDate currentDate = LocalDate.now();
         account.setCreateDate(currentDate);
         account.setUpdateDate(currentDate);
@@ -94,7 +103,8 @@ public class AccountService implements IAccountService{
         boolean isUpdate = false;
 
         if(newPassword != null && newPassword.trim().length() > 0 && !newPassword.equals(oldPassword)){
-            oldAccount.setPassword(newPassword);
+            String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
+            oldAccount.setPassword(encodedPassword);
             isUpdate = true;
         }
 
@@ -142,5 +152,60 @@ public class AccountService implements IAccountService{
         }
         
         return accountRepository.save(account);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return accountRepository.findById(username)
+            .orElseThrow(() -> new UsernameNotFoundException(
+                "Username not found"
+            )); 
+    }
+
+    @Override
+    public String registerAccount(AccountEntity account) {
+        String username = account.getUsername();
+        String password = account.getPassword();
+        String fullName = account.getFullName();
+        String phone = account.getPhone();
+        String address = account.getAddress();
+
+        if(username == null || username.trim().length() == 0){
+            throw new ApiRequestException("Username must not be null or empty");
+        }
+
+        Optional<AccountEntity> optional = accountRepository.findById(username);
+        if(optional.isPresent()){
+            throw new ApiRequestException("Username already used");
+        }
+
+        if(password == null || password.trim().length() < 6 || password.trim().length() > 20){
+            throw new ApiRequestException("Password's length must be between 6 and 20");
+        }
+
+        if(fullName == null || fullName.trim().length() == 0){
+            throw new ApiRequestException("Full name must not be null or empty");
+        }
+
+        if(phone == null || phone.trim().length() < 10 
+            || phone.trim().length() > 11 || !phone.matches("^[0-9]+$"))
+        {
+            throw new ApiRequestException("Phone must be number and length 10 or 11");
+        }
+
+        if(address == null || address.trim().length() == 0){
+            throw new ApiRequestException("Address must not be null or empty");
+        }
+
+        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
+        account.setPassword(encodedPassword);
+
+        LocalDate currentDate = LocalDate.now();
+        account.setCreateDate(currentDate);
+        account.setUpdateDate(currentDate);
+
+        account.setRole("CUSTOMER");
+        accountRepository.save(account);
+        return "Register Successfully!";
     }
 }
