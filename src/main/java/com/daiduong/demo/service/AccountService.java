@@ -7,17 +7,18 @@ import java.util.Optional;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.AccountRepository;
+import com.daiduong.demo.service.interfaces.IAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountService {
+public class AccountService implements IAccountService{
     
     @Autowired
     private AccountRepository accountRepository;
 
-    // add account
+    @Override
     public AccountEntity addAccount(AccountEntity account) {
         String username = account.getUsername();
         String password = account.getPassword();
@@ -67,12 +68,12 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    // get all account
+    @Override
     public List<AccountEntity> getAllAccounts(){
         return accountRepository.findAll();
     }
 
-    // update account
+    @Override
     public AccountEntity updateAccount(String username, AccountEntity newAccount){
         AccountEntity oldAccount = accountRepository.findById(username)
                                    .orElseThrow(() -> new ApiRequestException(
@@ -129,7 +130,7 @@ public class AccountService {
         return accountRepository.save(oldAccount);
     }
 
-    // delete account
+    @Override
     public AccountEntity deleteAccount(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(

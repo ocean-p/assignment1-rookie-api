@@ -6,22 +6,23 @@ import java.util.List;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.CategoryRepository;
+import com.daiduong.demo.service.interfaces.ICategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CategoryService {
+public class CategoryService implements ICategoryService{
     
     @Autowired
     private CategoryRepository categoryRepository;
 
-    // get all category
+    @Override
     public List<CategoryEntity> getAllCategories() {
         return categoryRepository.findAll();
     }
 
-    // add new category
+    @Override
     public CategoryEntity addCategory(CategoryEntity category){
         String name = category.getName();
         if(name == null || name.length() == 0){
@@ -41,7 +42,7 @@ public class CategoryService {
         return categoryRepository.save(category);
     }
 
-    // upadate category
+    @Override
     public CategoryEntity updateCategory(int id, CategoryEntity category) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
@@ -76,7 +77,7 @@ public class CategoryService {
         return categoryRepository.save(categoryEntity);
     }
 
-    // delete category
+    @Override
     public CategoryEntity deleteCategory(int id){
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(

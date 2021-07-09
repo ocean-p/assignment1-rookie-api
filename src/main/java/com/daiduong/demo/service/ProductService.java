@@ -9,12 +9,13 @@ import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.CategoryRepository;
 import com.daiduong.demo.repository.ProductRepository;
+import com.daiduong.demo.service.interfaces.IProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductService {
+public class ProductService implements IProductService {
     
     @Autowired
     private ProductRepository productRepository;
@@ -22,7 +23,7 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    // add new product
+    @Override
     public ProductEntity addProduct(ProductEntity product) {
         String name = product.getName();
         float price = product.getPrice();
@@ -54,12 +55,12 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    // get all products
+    @Override
     public List<ProductEntity> getAllProducts() {
         return productRepository.findAll();
     }
 
-    // update products
+    @Override
     public ProductEntity updateProduct(int id, ProductEntity product) {
         ProductEntity productEntity = productRepository.findById(id)
                     .orElseThrow(() -> new ApiRequestException(
@@ -81,7 +82,7 @@ public class ProductService {
 
         boolean isUpdate = false;
 
-        if(newCategoryId != oldCategoryId){
+        if(newCategoryId > 0 && newCategoryId != oldCategoryId){
             Optional<CategoryEntity> categoryEntity = categoryRepository.findById(newCategoryId);
             if(categoryEntity.isPresent()){
                 productEntity.setCategoryId(newCategoryId);
@@ -126,7 +127,7 @@ public class ProductService {
         return productRepository.save(productEntity);
     }
 
-    // delete product
+    @Override
     public ProductEntity deleteProduct(int id){
         ProductEntity productEntity = productRepository.findById(id)
                     .orElseThrow(() -> new ApiRequestException(

@@ -5,9 +5,9 @@ import java.util.List;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
-import com.daiduong.demo.service.AccountService;
-import com.daiduong.demo.service.CategoryService;
-import com.daiduong.demo.service.ProductService;
+import com.daiduong.demo.service.interfaces.IAccountService;
+import com.daiduong.demo.service.interfaces.ICategoryService;
+import com.daiduong.demo.service.interfaces.IProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     
     @Autowired
-    private CategoryService categoryService;
+    private ICategoryService categoryService;
 
     @Autowired
-    private ProductService productService;
+    private IProductService productService;
 
     @Autowired
-    private AccountService accountService;
+    private IAccountService accountService;
 
     /** BEGIN: CATEGORY */
     @GetMapping("/category")
@@ -43,7 +43,7 @@ public class AdminController {
         return categoryService.addCategory(entity);
     }
 
-    @PutMapping("/category/new/{id}")
+    @PutMapping("/category/updating/{id}")
     public CategoryEntity updateCategory(@PathVariable("id") int id,
                                         @RequestBody CategoryEntity entity)
     {
@@ -67,7 +67,7 @@ public class AdminController {
         return productService.getAllProducts();
     }
 
-    @PutMapping("/product/new/{id}")
+    @PutMapping("/product/updating/{id}")
     public ProductEntity updateProduct(@PathVariable("id") int id, 
                                        @RequestBody ProductEntity entity)
     {
@@ -91,7 +91,7 @@ public class AdminController {
         return accountService.getAllAccounts();
     }
 
-    @PutMapping("/account/new/{username}")
+    @PutMapping("/account/updating/{username}")
     public AccountEntity updateAccount(@PathVariable("username") String username, 
                                        @RequestBody AccountEntity entity)
     {
