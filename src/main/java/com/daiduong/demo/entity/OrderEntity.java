@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -27,20 +29,22 @@ public class OrderEntity {
     @Column(name = "payment")
     private String payment;
 
-    @Column(name = "username")
-    private String username;
+    // @Column(name = "username")
+    @ManyToOne
+    @JoinColumn(name = "username")
+    private AccountEntity account;
     
     public OrderEntity() {
     }
 
     public OrderEntity(int id, LocalDate createDate, int totalQuantity, float totalPrice, String payment,
-            String username) {
+            AccountEntity account) {
         this.id = id;
         this.createDate = createDate;
         this.totalQuantity = totalQuantity;
         this.totalPrice = totalPrice;
         this.payment = payment;
-        this.username = username;
+        this.account = account;
     }
 
     public int getId() {
@@ -83,12 +87,13 @@ public class OrderEntity {
         this.payment = payment;
     }
 
-    public String getUsername() {
-        return username;
+    public AccountEntity getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(AccountEntity account) {
+        this.account = account;
     }
+
     
 }

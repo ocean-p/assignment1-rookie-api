@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.daiduong.demo.composite.OrderDetailCompositeKey;
@@ -14,12 +16,16 @@ import com.daiduong.demo.composite.OrderDetailCompositeKey;
 public class OrderDetailEntity {
     
     @Id
-    @Column(name = "order_id")
-    private int orderId;
+    // @Column(name = "order_id")
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private OrderEntity order;
 
     @Id
-    @Column(name = "product_id")
-    private int productId;
+    // @Column(name = "product_id")
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private ProductEntity product;
 
     @Column(name = "product_name")
     private String productName;
@@ -36,30 +42,30 @@ public class OrderDetailEntity {
     public OrderDetailEntity() {
     }
 
-    public OrderDetailEntity(int orderId, int productId, String productName, float unitPrice, int quantity,
-            float totalPrice) {
-        this.orderId = orderId;
-        this.productId = productId;
+    public OrderDetailEntity(OrderEntity order, ProductEntity product, String productName, float unitPrice,
+            int quantity, float totalPrice) {
+        this.order = order;
+        this.product = product;
         this.productName = productName;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
     }
 
-    public int getOrderId() {
-        return orderId;
+    public OrderEntity getOrder() {
+        return order;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrder(OrderEntity order) {
+        this.order = order;
     }
 
-    public int getProductId() {
-        return productId;
+    public ProductEntity getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProduct(ProductEntity product) {
+        this.product = product;
     }
 
     public String getProductName() {
@@ -94,4 +100,5 @@ public class OrderDetailEntity {
         this.totalPrice = totalPrice;
     }
 
+   
 }

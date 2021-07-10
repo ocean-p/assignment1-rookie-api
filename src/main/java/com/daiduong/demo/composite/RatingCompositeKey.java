@@ -1,47 +1,46 @@
 package com.daiduong.demo.composite;
 
 import java.io.Serializable;
-import java.util.Objects;
+
+import com.daiduong.demo.entity.AccountEntity;
+import com.daiduong.demo.entity.ProductEntity;
 
 public class RatingCompositeKey implements Serializable{
-    private int productId;
-    private String username;
+    private ProductEntity product;
+    private AccountEntity account;
 
     public RatingCompositeKey() {
     }
 
-    public RatingCompositeKey(int productId, String username) {
-        this.productId = productId;
-        this.username = username;
+    public RatingCompositeKey(ProductEntity product, AccountEntity account) {
+        this.product = product;
+        this.account = account;
     }
 
-    public int getProductId() {
-        return productId;
+    public ProductEntity getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProduct(ProductEntity product) {
+        this.product = product;
     }
 
-    public String getUsername() {
-        return username;
+    public AccountEntity getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(AccountEntity account) {
+        this.account = account;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if(this == o) return true;
-        if(o == null || getClass() != o.getClass()) return false;
-        RatingCompositeKey compositeKey = (RatingCompositeKey) o;
-        return (productId == compositeKey.productId) && (username.equals(compositeKey.username));
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(productId, username);
+        return super.hashCode();
     }
 
 }

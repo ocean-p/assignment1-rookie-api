@@ -1,48 +1,46 @@
 package com.daiduong.demo.composite;
 
 import java.io.Serializable;
-import java.util.Objects;
+
+import com.daiduong.demo.entity.OrderEntity;
+import com.daiduong.demo.entity.ProductEntity;
 
 public class OrderDetailCompositeKey implements Serializable{
-    private int orderId;
-    private int productId;
+    private OrderEntity order;
+    private ProductEntity product;
     
     public OrderDetailCompositeKey() {
     }
 
-    public OrderDetailCompositeKey(int orderId, int productId) {
-        this.orderId = orderId;
-        this.productId = productId;
+    public OrderDetailCompositeKey(OrderEntity order, ProductEntity product) {
+        this.order = order;
+        this.product = product;
     }
 
-    public int getOrderId() {
-        return orderId;
+    public OrderEntity getOrder() {
+        return order;
     }
 
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
+    public void setOrder(OrderEntity order) {
+        this.order = order;
     }
 
-    public int getProductId() {
-        return productId;
+    public ProductEntity getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProduct(ProductEntity product) {
+        this.product = product;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId, productId);
+        return super.hashCode();
     }
 
-    @Override
-    public boolean equals(Object o) {
-       if(this == o) return true;
-       if(o == null || getClass() != o.getClass()) return false;
-       OrderDetailCompositeKey ck = (OrderDetailCompositeKey) o;
-       return (orderId == ck.orderId) && (productId == ck.productId);
-    }
-
-    
 }

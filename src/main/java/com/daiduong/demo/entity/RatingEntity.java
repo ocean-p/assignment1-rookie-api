@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.daiduong.demo.composite.RatingCompositeKey;
@@ -14,12 +16,16 @@ import com.daiduong.demo.composite.RatingCompositeKey;
 public class RatingEntity {
     
     @Id
-    @Column(name = "product_id")
-    private int productId;
+    //@Column(name = "product_id")
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private ProductEntity product;
 
     @Id
-    @Column(name = "username")
-    private String username;
+    //@Column(name = "username")
+    @ManyToOne
+    @JoinColumn(name = "username")
+    private AccountEntity account;
 
     @Column(name = "point")
     private int point;
@@ -27,26 +33,26 @@ public class RatingEntity {
     public RatingEntity() {
     }
 
-    public RatingEntity(int productId, String username, int point) {
-        this.productId = productId;
-        this.username = username;
+    public RatingEntity(ProductEntity product, AccountEntity account, int point) {
+        this.product = product;
+        this.account = account;
         this.point = point;
     }
 
-    public int getProductId() {
-        return productId;
+    public ProductEntity getProduct() {
+        return product;
     }
 
-    public void setProductId(int productId) {
-        this.productId = productId;
+    public void setProduct(ProductEntity product) {
+        this.product = product;
     }
 
-    public String getUsername() {
-        return username;
+    public AccountEntity getAccount() {
+        return account;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAccount(AccountEntity account) {
+        this.account = account;
     }
 
     public int getPoint() {
@@ -57,4 +63,5 @@ public class RatingEntity {
         this.point = point;
     }
 
+    
 }
