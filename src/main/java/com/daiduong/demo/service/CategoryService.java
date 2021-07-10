@@ -1,8 +1,11 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.daiduong.demo.convert.CategoryConvert;
+import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.CategoryRepository;
@@ -17,33 +20,45 @@ public class CategoryService implements ICategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private CategoryConvert categoryConvert;
+
     @Override
-    public List<CategoryEntity> getAllCategories() {
-        return categoryRepository.findAll();
+    public List<CategoryDTO> getAllCategories() {
+        List<CategoryDTO> dtoList = new ArrayList<>();
+        List<CategoryEntity> entityList = categoryRepository.findAll();
+        for (CategoryEntity categoryEntity : entityList) {
+            CategoryDTO categoryDTO = categoryConvert.toDTO(categoryEntity);
+            dtoList.add(categoryDTO);
+        }
+        return dtoList;
     }
 
     @Override
-    public CategoryEntity addCategory(CategoryEntity category){
+    public CategoryDTO addCategory(CategoryDTO category){
         String name = category.getName();
         if(name == null || name.length() == 0){
             throw new ApiRequestException("Fail to add category - Name not null or empty");
         }
 
+        CategoryEntity categoryEntity = categoryConvert.toEntity(category);
+
         if(categoryRepository.count() < 1){
-            category.setId(1);
+            categoryEntity.setId(1);
         }
         else{
             int maxId = categoryRepository.findMaxId();
-            category.setId(maxId + 1);
+            categoryEntity.setId(maxId + 1);
         }
         LocalDate currentDate = LocalDate.now();
-        category.setCreateDate(currentDate);
-        category.setUpdateDate(currentDate);
-        return categoryRepository.save(category);
+        categoryEntity.setCreateDate(currentDate);
+        categoryEntity.setUpdateDate(currentDate);
+        categoryEntity = categoryRepository.save(categoryEntity);
+        return categoryConvert.toDTO(categoryEntity);
     }
 
     @Override
-    public CategoryEntity updateCategory(int id, CategoryEntity category) {
+    public CategoryDTO updateCategory(int id, CategoryDTO category) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
                 "The category with id:" + id + " does not exist"
@@ -73,12 +88,12 @@ public class CategoryService implements ICategoryService{
         {
             categoryEntity.setUpdateDate(LocalDate.now());
         }
-
-        return categoryRepository.save(categoryEntity);
+        categoryEntity = categoryRepository.save(categoryEntity);
+        return categoryConvert.toDTO(categoryEntity);
     }
 
     @Override
-    public CategoryEntity deleteCategory(int id){
+    public CategoryDTO deleteCategory(int id){
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
                 "The category with id:" + id + " does not exist"
@@ -86,7 +101,8 @@ public class CategoryService implements ICategoryService{
         if(categoryEntity.isDeleted() == false){
             categoryEntity.setDeleted(true);
             categoryEntity.setUpdateDate(LocalDate.now());
-        }    
-        return categoryRepository.save(categoryEntity);     
+        }
+        categoryEntity = categoryRepository.save(categoryEntity);
+        return categoryConvert.toDTO(categoryEntity);     
     }
 }

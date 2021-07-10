@@ -1,9 +1,12 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.daiduong.demo.convert.AccountConvert;
+import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.AccountRepository;
@@ -24,8 +27,11 @@ public class AccountService implements IAccountService{
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Autowired
+    private AccountConvert accountConvert;
+
     @Override
-    public AccountEntity addAccount(AccountEntity account) {
+    public AccountDTO addAccount(AccountDTO account) {
         String username = account.getUsername();
         String password = account.getPassword();
         String fullName = account.getFullName();
@@ -66,24 +72,32 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException("Role must be admin or customer");
         }
         
+        AccountEntity accountEntity = accountConvert.toEntity(account);
+
         String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        account.setPassword(encodedPassword);
+        accountEntity.setPassword(encodedPassword);
 
         LocalDate currentDate = LocalDate.now();
-        account.setCreateDate(currentDate);
-        account.setUpdateDate(currentDate);
-        account.setRole(role.toUpperCase());
-
-        return accountRepository.save(account);
+        accountEntity.setCreateDate(currentDate);
+        accountEntity.setUpdateDate(currentDate);
+        accountEntity.setRole(role.toUpperCase());
+        accountEntity = accountRepository.save(accountEntity);
+        return accountConvert.toDTO(accountEntity);
     }
 
     @Override
-    public List<AccountEntity> getAllAccounts(){
-        return accountRepository.findAll();
+    public List<AccountDTO> getAllAccounts(){
+        List<AccountDTO> dtoList = new ArrayList<>();
+        List<AccountEntity> entityList = accountRepository.findAll();
+        for (AccountEntity accountEntity : entityList) {
+            AccountDTO dto = accountConvert.toDTO(accountEntity);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 
     @Override
-    public AccountEntity updateAccount(String username, AccountEntity newAccount){
+    public AccountDTO updateAccount(String username, AccountDTO newAccount){
         AccountEntity oldAccount = accountRepository.findById(username)
                                    .orElseThrow(() -> new ApiRequestException(
                                        "Username not found"
@@ -136,12 +150,12 @@ public class AccountService implements IAccountService{
         if(isUpdate){
             oldAccount.setUpdateDate(LocalDate.now());
         }
-
-        return accountRepository.save(oldAccount);
+        oldAccount = accountRepository.save(oldAccount);
+        return accountConvert.toDTO(oldAccount);
     }
 
     @Override
-    public AccountEntity deleteAccount(String username){
+    public AccountDTO deleteAccount(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
                                     "Username not found"
@@ -150,8 +164,8 @@ public class AccountService implements IAccountService{
             account.setDeleted(true);
             account.setUpdateDate(LocalDate.now());
         }
-        
-        return accountRepository.save(account);
+        account = accountRepository.save(account);
+        return accountConvert.toDTO(account);
     }
 
     @Override
@@ -163,7 +177,7 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public String registerAccount(AccountEntity account) {
+    public String registerAccount(AccountDTO account) {
         String username = account.getUsername();
         String password = account.getPassword();
         String fullName = account.getFullName();
@@ -196,16 +210,16 @@ public class AccountService implements IAccountService{
         if(address == null || address.trim().length() == 0){
             throw new ApiRequestException("Address must not be null or empty");
         }
-
+        AccountEntity accountEntity = accountConvert.toEntity(account);
         String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        account.setPassword(encodedPassword);
+        accountEntity.setPassword(encodedPassword);
 
         LocalDate currentDate = LocalDate.now();
-        account.setCreateDate(currentDate);
-        account.setUpdateDate(currentDate);
+        accountEntity.setCreateDate(currentDate);
+        accountEntity.setUpdateDate(currentDate);
 
-        account.setRole("CUSTOMER");
-        accountRepository.save(account);
+        accountEntity.setRole("CUSTOMER");
+        accountRepository.save(accountEntity);
         return "Register Successfully!";
     }
 }

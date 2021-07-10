@@ -2,19 +2,19 @@ package com.daiduong.demo.service.interfaces;
 
 import java.util.List;
 
-import com.daiduong.demo.entity.CategoryEntity;
+import com.daiduong.demo.dto.CategoryDTO;
 
 public interface ICategoryService {
     
     // get all category
-    public List<CategoryEntity> getAllCategories();
+    public List<CategoryDTO> getAllCategories();
 
     // add new category
-    public CategoryEntity addCategory(CategoryEntity category);
+    public CategoryDTO addCategory(CategoryDTO category);
 
     // upadate category
-    public CategoryEntity updateCategory(int id, CategoryEntity category);
+    public CategoryDTO updateCategory(int id, CategoryDTO category);
 
     // delete category
-    public CategoryEntity deleteCategory(int id);
+    public CategoryDTO deleteCategory(int id);
 }

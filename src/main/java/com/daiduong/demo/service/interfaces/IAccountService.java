@@ -2,23 +2,23 @@ package com.daiduong.demo.service.interfaces;
 
 import java.util.List;
 
-import com.daiduong.demo.entity.AccountEntity;
+import com.daiduong.demo.dto.AccountDTO;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface IAccountService extends UserDetailsService{
     // add account
-    public AccountEntity addAccount(AccountEntity account);
+    public AccountDTO addAccount(AccountDTO account);
 
     // get all account
-    public List<AccountEntity> getAllAccounts(); 
+    public List<AccountDTO> getAllAccounts(); 
 
     // update account
-    public AccountEntity updateAccount(String username, AccountEntity newAccount);
+    public AccountDTO updateAccount(String username, AccountDTO newAccount);
 
     // delete account
-    public AccountEntity deleteAccount(String username);
+    public AccountDTO deleteAccount(String username);
 
     // register account
-    public String registerAccount(AccountEntity account);
+    public String registerAccount(AccountDTO account);
 }

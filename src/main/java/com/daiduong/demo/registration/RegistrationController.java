@@ -1,6 +1,6 @@
 package com.daiduong.demo.registration;
 
-import com.daiduong.demo.entity.AccountEntity;
+import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.service.interfaces.IAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class RegistrationController {
     private IAccountService accountService;
     
     @PostMapping
-    public String register(@RequestBody AccountEntity account){
+    public String register(@RequestBody AccountDTO account){
         return accountService.registerAccount(account);
     }
 }

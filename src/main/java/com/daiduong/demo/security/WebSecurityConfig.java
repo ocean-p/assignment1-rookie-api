@@ -29,7 +29,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             .antMatchers("/admin/**").hasAuthority("ADMIN")
             .antMatchers("/customer/**").hasAuthority("CUSTOMER")
             .anyRequest()
-            .authenticated().and().formLogin();
+            .authenticated().and().httpBasic();
     }
 
     @Override

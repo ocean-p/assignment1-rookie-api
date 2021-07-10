@@ -2,9 +2,9 @@ package com.daiduong.demo.controller;
 
 import java.util.List;
 
-import com.daiduong.demo.entity.AccountEntity;
-import com.daiduong.demo.entity.CategoryEntity;
-import com.daiduong.demo.entity.ProductEntity;
+import com.daiduong.demo.dto.AccountDTO;
+import com.daiduong.demo.dto.CategoryDTO;
+import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.service.interfaces.IAccountService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
@@ -34,72 +34,72 @@ public class AdminController {
 
     /** BEGIN: CATEGORY */
     @GetMapping("/category")
-    public List<CategoryEntity> getAllCategories() {
+    public List<CategoryDTO> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
     @PostMapping("/category/new")
-    public CategoryEntity addCategory(@RequestBody CategoryEntity entity) {
-        return categoryService.addCategory(entity);
+    public CategoryDTO addCategory(@RequestBody CategoryDTO dto) {
+        return categoryService.addCategory(dto);
     }
 
     @PutMapping("/category/updating/{id}")
-    public CategoryEntity updateCategory(@PathVariable("id") int id,
-                                        @RequestBody CategoryEntity entity)
+    public CategoryDTO updateCategory(@PathVariable("id") int id,
+                                        @RequestBody CategoryDTO dto)
     {
-        return categoryService.updateCategory(id, entity);
+        return categoryService.updateCategory(id, dto);
     }
     
     @DeleteMapping("/category/deletion/{id}")
-    public CategoryEntity deleteCategory(@PathVariable("id") int id){
+    public CategoryDTO deleteCategory(@PathVariable("id") int id){
         return categoryService.deleteCategory(id);
     }
     /** END: CATEGORY */
 
     /** BEGIN: PRODUCT */
     @PostMapping("/product/new")
-    public ProductEntity addProduct(@RequestBody ProductEntity entity){
-        return productService.addProduct(entity);
+    public ProductDTO addProduct(@RequestBody ProductDTO dto){
+        return productService.addProduct(dto);
     }
 
     @GetMapping("/product")
-    public List<ProductEntity> getAllProducts(){
+    public List<ProductDTO> getAllProducts(){
         return productService.getAllProducts();
     }
 
     @PutMapping("/product/updating/{id}")
-    public ProductEntity updateProduct(@PathVariable("id") int id, 
-                                       @RequestBody ProductEntity entity)
+    public ProductDTO updateProduct(@PathVariable("id") int id, 
+                                       @RequestBody ProductDTO dto)
     {
-        return productService.updateProduct(id, entity);
+        return productService.updateProduct(id, dto);
     }
 
     @DeleteMapping("/product/deletion/{id}")
-    public ProductEntity deleteProduct(@PathVariable("id") int id){
+    public ProductDTO deleteProduct(@PathVariable("id") int id){
         return productService.deleteProduct(id);
     }
     /** END: PRODUCT */
 
     /** BEGIN: ACCOUNT */
     @PostMapping("/account/new")
-    public AccountEntity addAccount(@RequestBody AccountEntity entity){
-        return accountService.addAccount(entity);
+    public AccountDTO addAccount(@RequestBody AccountDTO dto){
+        return accountService.addAccount(dto);
     }
 
     @GetMapping("/account")
-    public List<AccountEntity> getAllAccounts(){
+    public List<AccountDTO> getAllAccounts(){
         return accountService.getAllAccounts();
     }
 
     @PutMapping("/account/updating/{username}")
-    public AccountEntity updateAccount(@PathVariable("username") String username, 
-                                       @RequestBody AccountEntity entity)
+    public AccountDTO updateAccount(@PathVariable("username") String username, 
+                                       @RequestBody AccountDTO dto)
     {
-        return accountService.updateAccount(username, entity);
+        return accountService.updateAccount(username, dto);
     }
 
     @DeleteMapping("/account/deletion/{username}")
-    public AccountEntity deleteAccount(@PathVariable("username") String username){
+    public AccountDTO deleteAccount(@PathVariable("username") String username){
         return accountService.deleteAccount(username);
     }
     /** END: ACCOUNT */

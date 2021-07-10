@@ -1,59 +1,25 @@
-package com.daiduong.demo.entity;
+package com.daiduong.demo.dto;
 
 import java.time.LocalDate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "product")
-public class ProductEntity {
-
-    @Id
-    @Column(name = "product_id")
+public class ProductDTO {
     private int id;
-
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "price")
     private float price;
-
-    @Column(name = "img")
     private String image;
-
-    @Column(name = "quantity")
     private int quantity;
-
-    @Column(name = "description")
     private String description;
-
-    @Column(name = "average_rate")
     private int averageRate;
-
-    @Column(name = "create_date")
     private LocalDate createDate;
-
-    @Column(name = "update_date")
     private LocalDate updateDate;
-
-    // @Column(name = "category_id")
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
-
-    @Column(name = "is_delete")
+    private int categoryId;
     private boolean isDeleted;
     
-    public ProductEntity() {
+    public ProductDTO() {
     }
 
-    public ProductEntity(int id, String name, float price, String image, int quantity, String description,
-            int averageRate, LocalDate createDate, LocalDate updateDate, CategoryEntity category, boolean isDeleted) {
+    public ProductDTO(int id, String name, float price, String image, int quantity, String description, int averageRate,
+            LocalDate createDate, LocalDate updateDate, int categoryId, boolean isDeleted) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -63,7 +29,7 @@ public class ProductEntity {
         this.averageRate = averageRate;
         this.createDate = createDate;
         this.updateDate = updateDate;
-        this.category = category;
+        this.categoryId = categoryId;
         this.isDeleted = isDeleted;
     }
 
@@ -139,12 +105,12 @@ public class ProductEntity {
         this.updateDate = updateDate;
     }
 
-    public CategoryEntity getCategory() {
-        return category;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(CategoryEntity category) {
-        this.category = category;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public boolean isDeleted() {
@@ -154,5 +120,5 @@ public class ProductEntity {
     public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
-
+    
 }
