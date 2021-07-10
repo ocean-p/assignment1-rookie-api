@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.daiduong.demo.convert.CategoryConvert;
 import com.daiduong.demo.convert.ProductConvert;
+import com.daiduong.demo.dto.CategoryDTO;
+import com.daiduong.demo.dto.HomePageCustomerDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
@@ -27,6 +30,9 @@ public class ProductService implements IProductService {
 
     @Autowired
     private ProductConvert productConvert;
+
+    @Autowired
+    private CategoryConvert categoryConvert;
 
     @Override
     public ProductDTO addProduct(ProductDTO product) {
@@ -151,5 +157,60 @@ public class ProductService implements IProductService {
         }
         productEntity = productRepository.save(productEntity);
         return productConvert.toDTO(productEntity);            
+    }
+
+    @Override
+    public List<ProductDTO> getProductNoDeleteQuantityMoreZero() {
+        List<ProductDTO> dtoList = new ArrayList<>();
+        List<ProductEntity> entityList = productRepository.getProductNoDeleteQuantityMoreZero();
+        for (ProductEntity productEntity : entityList) {
+            ProductDTO dto = productConvert.toDTO(productEntity);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
+
+    @Override
+    public List<ProductDTO> getProductByCategory(int categoryId) {
+        List<ProductDTO> dtoList = new ArrayList<>();
+        List<ProductEntity> entityList = productRepository.getProductByCategory(categoryId);
+        for (ProductEntity productEntity : entityList) {
+            ProductDTO dto = productConvert.toDTO(productEntity);
+            dtoList.add(dto);
+        }      
+        return dtoList;
+    }
+
+    @Override
+    public ProductDTO getProductById(int productId) {
+        ProductEntity productEntity = productRepository.getProductById(productId)
+                    .orElseThrow(() -> new ApiRequestException(
+                        "Product " + productId + " not found , out of stock or was deleted"
+                    ));
+        ProductDTO productDTO = productConvert.toDTO(productEntity);            
+        return productDTO;
+    }
+
+    @Override
+    public HomePageCustomerDTO loadHomePageCustomer() {
+        // list product
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        List<ProductEntity> productEntityList = productRepository.getProductNoDeleteQuantityMoreZero();
+        for (ProductEntity productEntity : productEntityList) {
+            ProductDTO productDTO = productConvert.toDTO(productEntity);
+            productDTOList.add(productDTO);
+        }
+        
+        // list category
+        List<CategoryDTO> categoryDTOList = new ArrayList<>();
+        List<CategoryEntity> CategoryEntityList = categoryRepository.getCategoryNoDelete();
+        for (CategoryEntity categoryEntity : CategoryEntityList) {
+            CategoryDTO categoryDTO = categoryConvert.toDTO(categoryEntity);
+            categoryDTOList.add(categoryDTO);
+        }
+
+        HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
+
+        return home;
     }
 }

@@ -17,4 +17,7 @@ public interface ICategoryService {
 
     // delete category
     public CategoryDTO deleteCategory(int id);
+
+    // list category no delete 
+    public List<CategoryDTO> getCategoryNoDelete();
 }

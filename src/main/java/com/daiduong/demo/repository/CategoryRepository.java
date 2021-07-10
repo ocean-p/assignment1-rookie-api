@@ -1,5 +1,7 @@
 package com.daiduong.demo.repository;
 
+import java.util.List;
+
 import com.daiduong.demo.entity.CategoryEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,4 +15,11 @@ public interface CategoryRepository extends
     @Query(value = "select Max(category_id) from category", 
             nativeQuery = true)                
     Integer findMaxId();
+
+    @Query(value = "select *\n"
+                   + "from category\n" 
+                   + "where is_delete = false\n"
+                   + "order by create_date desc\n",
+           nativeQuery = true)
+    List<CategoryEntity> getCategoryNoDelete();
 }

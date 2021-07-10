@@ -105,4 +105,15 @@ public class CategoryService implements ICategoryService{
         categoryEntity = categoryRepository.save(categoryEntity);
         return categoryConvert.toDTO(categoryEntity);     
     }
+
+    @Override
+    public List<CategoryDTO> getCategoryNoDelete() {
+        List<CategoryDTO> dtoList = new ArrayList<>();
+        List<CategoryEntity> entityList = categoryRepository.getCategoryNoDelete();
+        for (CategoryEntity categoryEntity : entityList) {
+            CategoryDTO dto = categoryConvert.toDTO(categoryEntity);
+            dtoList.add(dto);
+        }
+        return dtoList;
+    }
 }
