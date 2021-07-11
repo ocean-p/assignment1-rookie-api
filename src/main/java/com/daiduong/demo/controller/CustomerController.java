@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.HomePageCustomerDTO;
+import com.daiduong.demo.dto.PagingProductDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
@@ -53,4 +54,10 @@ public class CustomerController {
     public HomePageCustomerDTO loadHomePageCustomer(){
         return productService.loadHomePageCustomer();
     }
+
+    @GetMapping("/product/page/{number}")
+    public PagingProductDTO pagingProductNoDelete(@PathVariable("number") int pageNo){
+        return productService.pagingProductNoDelete(pageNo, 3);
+    }
+        
 }

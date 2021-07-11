@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.daiduong.demo.entity.ProductEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -42,4 +44,6 @@ public interface ProductRepository extends
                 + "order by create_date desc\n", 
         nativeQuery = true)
     Optional<ProductEntity> getProductById(int productId);
+
+    Page<ProductEntity> findByIsDeleted(boolean isDelete, Pageable pageable);
 }

@@ -8,6 +8,7 @@ import com.daiduong.demo.convert.CategoryConvert;
 import com.daiduong.demo.convert.ProductConvert;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.HomePageCustomerDTO;
+import com.daiduong.demo.dto.PagingProductDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
@@ -17,6 +18,10 @@ import com.daiduong.demo.repository.ProductRepository;
 import com.daiduong.demo.service.interfaces.IProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -212,5 +217,26 @@ public class ProductService implements IProductService {
         HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
 
         return home;
+    }
+
+    @Override
+    public PagingProductDTO pagingProductNoDelete(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo-1, pageSize, Sort.by("createDate").descending());
+        Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
+
+        List<ProductEntity> productEntityList = page.getContent();
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        for (ProductEntity productEntity : productEntityList) {
+            ProductDTO productDTO = productConvert.toDTO(productEntity);
+            productDTOList.add(productDTO);
+        }
+
+        PagingProductDTO pagingProductDTO = new PagingProductDTO();
+        pagingProductDTO.setCurrentPage(pageNo);
+        pagingProductDTO.setTotalPages(page.getTotalPages());
+        pagingProductDTO.setTotalItems(page.getTotalElements());
+        pagingProductDTO.setProductList(productDTOList);
+
+        return pagingProductDTO;
     }
 }

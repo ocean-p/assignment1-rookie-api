@@ -3,6 +3,7 @@ package com.daiduong.demo.service.interfaces;
 import java.util.List;
 
 import com.daiduong.demo.dto.HomePageCustomerDTO;
+import com.daiduong.demo.dto.PagingProductDTO;
 import com.daiduong.demo.dto.ProductDTO;
 
 public interface IProductService {
@@ -29,4 +30,6 @@ public interface IProductService {
 
     // home page for customer
     public HomePageCustomerDTO loadHomePageCustomer();
+
+    public PagingProductDTO pagingProductNoDelete(int pageNo, int pageSize);
 }
