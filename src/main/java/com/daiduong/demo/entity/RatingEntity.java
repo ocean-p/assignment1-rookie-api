@@ -3,26 +3,22 @@ package com.daiduong.demo.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.daiduong.demo.composite.RatingCompositeKey;
-
 @Entity
 @Table(name = "rating")
-@IdClass(RatingCompositeKey.class)
 public class RatingEntity {
     
     @Id
-    //@Column(name = "product_id")
+    @Column(name = "rate_id")
+    private int ratingId;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductEntity product;
 
-    @Id
-    //@Column(name = "username")
     @ManyToOne
     @JoinColumn(name = "username")
     private AccountEntity account;
@@ -33,10 +29,19 @@ public class RatingEntity {
     public RatingEntity() {
     }
 
-    public RatingEntity(ProductEntity product, AccountEntity account, int point) {
+    public RatingEntity(int ratingId, ProductEntity product, AccountEntity account, int point) {
+        this.ratingId = ratingId;
         this.product = product;
         this.account = account;
         this.point = point;
+    }
+
+    public int getRatingId() {
+        return ratingId;
+    }
+
+    public void setRatingId(int ratingId) {
+        this.ratingId = ratingId;
     }
 
     public ProductEntity getProduct() {
@@ -62,6 +67,4 @@ public class RatingEntity {
     public void setPoint(int point) {
         this.point = point;
     }
-
-    
 }

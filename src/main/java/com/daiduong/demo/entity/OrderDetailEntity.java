@@ -3,26 +3,22 @@ package com.daiduong.demo.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.daiduong.demo.composite.OrderDetailCompositeKey;
-
 @Entity
 @Table(name = "orderdetail")
-@IdClass(OrderDetailCompositeKey.class)
 public class OrderDetailEntity {
     
     @Id
-    // @Column(name = "order_id")
+    @Column(name = "id")
+    private int orderDetailId;
+
     @ManyToOne
     @JoinColumn(name = "order_id")
     private OrderEntity order;
-
-    @Id
-    // @Column(name = "product_id")
+    
     @ManyToOne
     @JoinColumn(name = "product_id")
     private ProductEntity product;
@@ -42,14 +38,23 @@ public class OrderDetailEntity {
     public OrderDetailEntity() {
     }
 
-    public OrderDetailEntity(OrderEntity order, ProductEntity product, String productName, float unitPrice,
-            int quantity, float totalPrice) {
+    public OrderDetailEntity(int orderDetailId, OrderEntity order, ProductEntity product, String productName,
+            float unitPrice, int quantity, float totalPrice) {
+        this.orderDetailId = orderDetailId;
         this.order = order;
         this.product = product;
         this.productName = productName;
         this.unitPrice = unitPrice;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+    }
+
+    public int getOrderDetailId() {
+        return orderDetailId;
+    }
+
+    public void setOrderDetailId(int orderDetailId) {
+        this.orderDetailId = orderDetailId;
     }
 
     public OrderEntity getOrder() {
@@ -99,6 +104,4 @@ public class OrderDetailEntity {
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
     }
-
-   
 }
