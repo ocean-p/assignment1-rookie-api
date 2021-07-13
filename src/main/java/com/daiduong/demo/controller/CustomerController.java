@@ -2,10 +2,12 @@ package com.daiduong.demo.controller;
 
 import java.util.List;
 
+import com.daiduong.demo.dto.CartDTO;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.HomePageCustomerDTO;
 import com.daiduong.demo.dto.PagingProductDTO;
 import com.daiduong.demo.dto.ProductDTO;
+import com.daiduong.demo.service.interfaces.ICartService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
 
@@ -24,6 +26,9 @@ public class CustomerController {
 
     @Autowired
     private IProductService productService;
+
+    @Autowired
+    private ICartService cartService;
 
     @GetMapping
     public String hello(){
@@ -59,5 +64,33 @@ public class CustomerController {
     public PagingProductDTO pagingProductNoDelete(@PathVariable("number") int pageNo){
         return productService.pagingProductNoDelete(pageNo, 3);
     }
-        
+    
+    
+    @GetMapping("/addtocart/{username}/{productid}/{quantity}")
+    public CartDTO addtoCart(@PathVariable("username") String username, 
+                            @PathVariable("productid") int productId, 
+                            @PathVariable("quantity") int quantity)
+    {
+        return cartService.addtoCart(username, productId, quantity);
+    }
+
+    @GetMapping("/cart/view/{username}")
+    public List<CartDTO> viewCart(@PathVariable("username") String username){
+        return cartService.viewCart(username);
+    }
+
+    @GetMapping("/cart/delete/{id}/{username}")
+    public List<CartDTO> deleteItemInCart(@PathVariable("id") int productId,
+                                    @PathVariable("username") String username)
+    {
+        return cartService.deleteItemInCart(username, productId);
+    }
+    
+    @GetMapping("/cart/update/{id}/{quantity}/{username}")
+    public List<CartDTO> updateQuantityInCart(@PathVariable("id") int productId,
+                                            @PathVariable("quantity") int quantity,
+                                            @PathVariable("username") String username)
+    {
+        return cartService.updateQuantityInCart(username, productId, quantity);
+    }                                        
 }
