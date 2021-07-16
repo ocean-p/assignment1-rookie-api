@@ -6,14 +6,20 @@ import java.util.Optional;
 
 import com.daiduong.demo.convert.AccountConvert;
 import com.daiduong.demo.dto.AccountDTO;
+import com.daiduong.demo.dto.ListAccountByRoleDTO;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.AccountRepository;
 import com.daiduong.demo.service.interfaces.IAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +28,8 @@ public class AccountService implements IAccountService{
     @Autowired
     private AccountRepository accountRepository;
 
-    // @Autowired
-    // private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AccountConvert accountConvert;
@@ -72,13 +78,13 @@ public class AccountService implements IAccountService{
         
         AccountEntity accountEntity = accountConvert.toEntity(account);
 
-        // String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        // accountEntity.setPassword(encodedPassword);
+        String encodedPassword = passwordEncoder.encode(account.getPassword());
+        accountEntity.setPassword(encodedPassword);
 
         LocalDate currentDate = LocalDate.now();
         accountEntity.setCreateDate(currentDate);
         accountEntity.setUpdateDate(currentDate);
-        accountEntity.setRole(role.toUpperCase());
+        accountEntity.setRole("ROLE_" + role.toUpperCase());
         accountEntity = accountRepository.save(accountEntity);
         return accountConvert.toDTO(accountEntity);
     }
@@ -92,69 +98,69 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public AccountDTO updateAccount(String username, AccountDTO newAccount){
+    public AccountDTO updateCustomerAccountByAdmin(String username, AccountDTO newAccount){
+
         AccountEntity oldAccount = accountRepository.findById(username)
                                    .orElseThrow(() -> new ApiRequestException(
                                        "Username not found"
                                     ));
-        String newPassword = newAccount.getPassword();
+        if(!oldAccount.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+            throw new ApiRequestException("This username isn't of Customer account");
+        }
+
         String newFullName = newAccount.getFullName();
         String newPhone = newAccount.getPhone();
         String newAddress = newAccount.getAddress();
+        String newPassword = newAccount.getPassword();
         String newRole = newAccount.getRole();
-        
-        String oldPassword = oldAccount.getPassword();
-        String oldFullName = oldAccount.getFullName();
-        String oldPhone = oldAccount.getPhone();
-        String oldAddress = oldAccount.getAddress();
-        String oldRole = oldAccount.getRole();
 
-        boolean isUpdate = false;
-
-        if(newPassword != null && newPassword.trim().length() > 0 && !newPassword.equals(oldPassword)){
-            // String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
-            // oldAccount.setPassword(encodedPassword);
-            // isUpdate = true;
-        }
-
-        if(newFullName != null && newFullName.trim().length() > 0 && !newFullName.equals(oldFullName)){
-            oldAccount.setFullName(newFullName);
-            isUpdate = true;
-        }
-
-        if(newPhone != null && (newPhone.trim().length() == 10 || newPhone.trim().length() == 11)
-            && newPhone.matches("^[0-9]+$") && !newPhone.equals(oldPhone))
+        if(newPassword == null 
+            || newPassword.trim().length() < 6 
+            || newPassword.trim().length() > 20)
         {
-            oldAccount.setPhone(newPhone);
-            isUpdate = true;
-        }
-        
-        if(newAddress != null && newAddress.trim().length() > 0 && !newAddress.equals(oldAddress)){
-            oldAccount.setAddress(newAddress);
-            isUpdate = true;
+            throw new ApiRequestException("Password's length must be between 6 and 20");
         }
 
-        if(newRole != null && newRole.trim().length() > 0 
-            && (newRole.trim().equalsIgnoreCase("admin") || newRole.trim().equalsIgnoreCase("customer"))
-            && !newRole.equals(oldRole))
+        if(newFullName == null || newFullName.trim().length() == 0){
+            throw new ApiRequestException("Full name must not be null or empty");
+        }
+
+        if(newPhone == null || newPhone.trim().length() < 10 
+            || newPhone.trim().length() > 11 || !newPhone.matches("^[0-9]+$"))
         {
-            oldAccount.setRole(newRole.toUpperCase());
-            isUpdate = true;
+            throw new ApiRequestException("Phone must be number and length 10 or 11");
+        }
+
+        if(newAddress == null || newAddress.trim().length() == 0){
+            throw new ApiRequestException("Address must not be null or empty");
+        }
+
+        if(newRole == null || newRole.trim().length() == 0 
+            || (!newRole.equalsIgnoreCase("CUSTOMER") && !newRole.equalsIgnoreCase("ADMIN")))
+        {
+            throw new ApiRequestException("Role must be admin or customer");
         }    
 
-        if(isUpdate){
-            oldAccount.setUpdateDate(LocalDate.now());
-        }
+        oldAccount.setFullName(newFullName);
+        oldAccount.setPhone(newPhone);
+        oldAccount.setAddress(newAddress);
+        oldAccount.setPassword(passwordEncoder.encode(newPassword));
+        oldAccount.setRole("ROLE_" + newRole.toUpperCase());
+        oldAccount.setUpdateDate(LocalDate.now());
         oldAccount = accountRepository.save(oldAccount);
         return accountConvert.toDTO(oldAccount);
     }
 
     @Override
-    public AccountDTO deleteAccount(String username){
+    public AccountDTO deleteCustomerAccountByAdmin(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
                                     "Username not found"
                                 ));
+        if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+            throw new ApiRequestException("This username isn't of Customer account");
+        }
+
         if(account.isDeleted() == false){
             account.setDeleted(true);
             account.setUpdateDate(LocalDate.now());
@@ -172,49 +178,37 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public String registerAccount(AccountDTO account) {
-        String username = account.getUsername();
-        String password = account.getPassword();
-        String fullName = account.getFullName();
-        String phone = account.getPhone();
-        String address = account.getAddress();
+    public ListAccountByRoleDTO getAllCustomerAccounts(int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("createDate").descending());
+        Page<AccountEntity> page = accountRepository.findByRole("ROLE_CUSTOMER", pageable);
 
-        if(username == null || username.trim().length() == 0){
-            throw new ApiRequestException("Username must not be null or empty");
-        }
+        List<AccountEntity> accountEntityList = page.getContent();
+        List<AccountDTO> accountDTOList = accountConvert.toDTOList(accountEntityList);
 
-        Optional<AccountEntity> optional = accountRepository.findById(username);
-        if(optional.isPresent()){
-            throw new ApiRequestException("Username already used");
-        }
+        ListAccountByRoleDTO result = new ListAccountByRoleDTO();
+        result.setCurrentPage(pageNo);
+        result.setTotalPages(page.getTotalPages());
+        result.setTotalItems(page.getTotalElements());
+        result.setAccountDTOList(accountDTOList);
 
-        if(password == null || password.trim().length() < 6 || password.trim().length() > 20){
-            throw new ApiRequestException("Password's length must be between 6 and 20");
-        }
-
-        if(fullName == null || fullName.trim().length() == 0){
-            throw new ApiRequestException("Full name must not be null or empty");
-        }
-
-        if(phone == null || phone.trim().length() < 10 
-            || phone.trim().length() > 11 || !phone.matches("^[0-9]+$"))
-        {
-            throw new ApiRequestException("Phone must be number and length 10 or 11");
-        }
-
-        if(address == null || address.trim().length() == 0){
-            throw new ApiRequestException("Address must not be null or empty");
-        }
-        AccountEntity accountEntity = accountConvert.toEntity(account);
-        // String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        // accountEntity.setPassword(encodedPassword);
-
-        LocalDate currentDate = LocalDate.now();
-        accountEntity.setCreateDate(currentDate);
-        accountEntity.setUpdateDate(currentDate);
-
-        accountEntity.setRole("CUSTOMER");
-        accountRepository.save(accountEntity);
-        return "Register Successfully!";
+        return result;
     }
+
+    @Override
+    public ListAccountByRoleDTO getAllAdminAccounts(int pageNo) {
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("createDate").descending());
+        Page<AccountEntity> page = accountRepository.findByRole("ROLE_ADMIN", pageable);
+
+        List<AccountEntity> accountEntityList = page.getContent();
+        List<AccountDTO> accountDTOList = accountConvert.toDTOList(accountEntityList);
+
+        ListAccountByRoleDTO result = new ListAccountByRoleDTO();
+        result.setCurrentPage(pageNo);
+        result.setTotalPages(page.getTotalPages());
+        result.setTotalItems(page.getTotalElements());
+        result.setAccountDTOList(accountDTOList);
+
+        return result;
+    }
+
 }

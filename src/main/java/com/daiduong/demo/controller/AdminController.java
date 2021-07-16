@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.CategoryDTO;
+import com.daiduong.demo.dto.ListAccountByRoleDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.service.interfaces.IAccountService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -82,6 +85,7 @@ public class AdminController {
 
     /** BEGIN: ACCOUNT */
     @PostMapping("/account")
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountDTO addAccount(@RequestBody AccountDTO dto){
         return accountService.addAccount(dto);
     }
@@ -92,15 +96,29 @@ public class AdminController {
     }
 
     @PutMapping("/account/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountDTO updateAccount(@PathVariable("username") String username, 
                                        @RequestBody AccountDTO dto)
     {
-        return accountService.updateAccount(username, dto);
+        return accountService.updateCustomerAccountByAdmin(username, dto);
     }
 
     @DeleteMapping("/account/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountDTO deleteAccount(@PathVariable("username") String username){
-        return accountService.deleteAccount(username);
+        return accountService.deleteCustomerAccountByAdmin(username);
+    }
+
+    @GetMapping("/account/customer")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListAccountByRoleDTO getAllCustomerAccounts(@RequestParam int page){
+        return accountService.getAllCustomerAccounts(page);
+    }
+
+    @GetMapping("/account/ad")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListAccountByRoleDTO getAllAdminAccounts(@RequestParam int page){
+        return accountService.getAllAdminAccounts(page);
     }
     /** END: ACCOUNT */
 }
