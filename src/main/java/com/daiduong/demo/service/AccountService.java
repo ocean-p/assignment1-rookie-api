@@ -14,7 +14,6 @@ import com.daiduong.demo.service.interfaces.IAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,8 +22,8 @@ public class AccountService implements IAccountService{
     @Autowired
     private AccountRepository accountRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    // @Autowired
+    // private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private AccountConvert accountConvert;
@@ -73,8 +72,8 @@ public class AccountService implements IAccountService{
         
         AccountEntity accountEntity = accountConvert.toEntity(account);
 
-        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        accountEntity.setPassword(encodedPassword);
+        // String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
+        // accountEntity.setPassword(encodedPassword);
 
         LocalDate currentDate = LocalDate.now();
         accountEntity.setCreateDate(currentDate);
@@ -113,9 +112,9 @@ public class AccountService implements IAccountService{
         boolean isUpdate = false;
 
         if(newPassword != null && newPassword.trim().length() > 0 && !newPassword.equals(oldPassword)){
-            String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
-            oldAccount.setPassword(encodedPassword);
-            isUpdate = true;
+            // String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
+            // oldAccount.setPassword(encodedPassword);
+            // isUpdate = true;
         }
 
         if(newFullName != null && newFullName.trim().length() > 0 && !newFullName.equals(oldFullName)){
@@ -207,8 +206,8 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException("Address must not be null or empty");
         }
         AccountEntity accountEntity = accountConvert.toEntity(account);
-        String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
-        accountEntity.setPassword(encodedPassword);
+        // String encodedPassword = bCryptPasswordEncoder.encode(account.getPassword());
+        // accountEntity.setPassword(encodedPassword);
 
         LocalDate currentDate = LocalDate.now();
         accountEntity.setCreateDate(currentDate);
