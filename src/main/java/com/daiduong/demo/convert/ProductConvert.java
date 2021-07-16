@@ -1,5 +1,8 @@
 package com.daiduong.demo.convert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.entity.ProductEntity;
 
@@ -32,5 +35,14 @@ public class ProductConvert {
         dto.setCategoryId(entity.getCategory().getId());
         dto.setDeleted(entity.isDeleted());
         return dto;
+    }
+
+    public List<ProductDTO> toDTOList(List<ProductEntity> entityList) {
+        List<ProductDTO> dtoList = new ArrayList<>();
+        for (ProductEntity productEntity : entityList) {
+            ProductDTO dto = toDTO(productEntity);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }

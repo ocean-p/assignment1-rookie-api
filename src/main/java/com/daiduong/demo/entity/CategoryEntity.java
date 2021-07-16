@@ -1,14 +1,26 @@
 package com.daiduong.demo.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "category")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CategoryEntity {
 
     @Id
@@ -29,9 +41,9 @@ public class CategoryEntity {
 
     @Column(name = "is_delete")
     private boolean isDeleted;
-    
-    public CategoryEntity() {
-    }
+
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<ProductEntity> productEntityList;
 
     public CategoryEntity(int id, String name, String description, LocalDate createDate, LocalDate updateDate,
             boolean isDeleted) {
@@ -41,54 +53,5 @@ public class CategoryEntity {
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.isDeleted = isDeleted;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDate createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDate getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(LocalDate updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-    
+    } 
 }

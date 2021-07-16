@@ -1,5 +1,8 @@
 package com.daiduong.demo.convert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 
@@ -24,5 +27,14 @@ public class CategoryConvert {
         dto.setUpdateDate(entity.getUpdateDate());
         dto.setDeleted(entity.isDeleted());
         return dto;
+    }
+
+    public List<CategoryDTO> toDTOList(List<CategoryEntity> categoryEntityList) {
+        List<CategoryDTO> dtoList = new ArrayList<>();
+        for (CategoryEntity categoryEntity : categoryEntityList) {
+            CategoryDTO categoryDTO = toDTO(categoryEntity);
+            dtoList.add(categoryDTO);
+        }
+        return dtoList;
     }
 }

@@ -1,7 +1,6 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,13 +86,10 @@ public class AccountService implements IAccountService{
 
     @Override
     public List<AccountDTO> getAllAccounts(){
-        List<AccountDTO> dtoList = new ArrayList<>();
+        
         List<AccountEntity> entityList = accountRepository.findAll();
-        for (AccountEntity accountEntity : entityList) {
-            AccountDTO dto = accountConvert.toDTO(accountEntity);
-            dtoList.add(dto);
-        }
-        return dtoList;
+        
+        return accountConvert.toDTOList(entityList);
     }
 
     @Override

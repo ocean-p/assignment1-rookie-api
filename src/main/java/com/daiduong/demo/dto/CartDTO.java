@@ -1,42 +1,18 @@
 package com.daiduong.demo.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CartDTO {
     
     private ProductDTO products;
     private int quantity;
     private String username;
-    
-    public CartDTO() {
-    }
-
-    public CartDTO(ProductDTO products, int quantity, String username) {
-        this.products = products;
-        this.quantity = quantity;
-        this.username = username;
-    }
-
-    public ProductDTO getProducts() {
-        return products;
-    }
-
-    public void setProducts(ProductDTO products) {
-        this.products = products;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
     
 }

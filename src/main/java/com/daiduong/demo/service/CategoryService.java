@@ -1,7 +1,6 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.daiduong.demo.convert.CategoryConvert;
@@ -25,13 +24,10 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public List<CategoryDTO> getAllCategories() {
-        List<CategoryDTO> dtoList = new ArrayList<>();
+        
         List<CategoryEntity> entityList = categoryRepository.findAll();
-        for (CategoryEntity categoryEntity : entityList) {
-            CategoryDTO categoryDTO = categoryConvert.toDTO(categoryEntity);
-            dtoList.add(categoryDTO);
-        }
-        return dtoList;
+        
+        return categoryConvert.toDTOList(entityList);
     }
 
     @Override
@@ -108,12 +104,9 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public List<CategoryDTO> getCategoryNoDelete() {
-        List<CategoryDTO> dtoList = new ArrayList<>();
+       
         List<CategoryEntity> entityList = categoryRepository.getCategoryNoDelete();
-        for (CategoryEntity categoryEntity : entityList) {
-            CategoryDTO dto = categoryConvert.toDTO(categoryEntity);
-            dtoList.add(dto);
-        }
-        return dtoList;
+        
+        return categoryConvert.toDTOList(entityList);
     }
 }

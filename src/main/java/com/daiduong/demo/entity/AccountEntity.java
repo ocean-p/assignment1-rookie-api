@@ -3,18 +3,30 @@ package com.daiduong.demo.entity;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "account")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class AccountEntity implements UserDetails{
     
     @Id
@@ -44,9 +56,9 @@ public class AccountEntity implements UserDetails{
 
     @Column(name = "is_delete")
     private boolean isDeleted;
-    
-    public AccountEntity() {
-    }
+
+    @OneToMany(mappedBy = "account", fetch = FetchType.LAZY)
+    private List<RatingEntity> ratingEntityList;
 
     public AccountEntity(String username, String password, String fullName, String phone, String address,
             LocalDate createDate, LocalDate updateDate, String role, boolean isDeleted) {
@@ -58,78 +70,6 @@ public class AccountEntity implements UserDetails{
         this.createDate = createDate;
         this.updateDate = updateDate;
         this.role = role;
-        this.isDeleted = isDeleted;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public LocalDate getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDate createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDate getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(LocalDate updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean isDeleted) {
         this.isDeleted = isDeleted;
     }
 

@@ -69,21 +69,18 @@ public class CartService implements ICartService {
             } else {
                 id = cartRepository.findMaxId() + 1;
             }
-            CartEntity cartEntity = new CartEntity();
-            cartEntity.setId(id);
-            cartEntity.setAccount(accountEntity);
-            cartEntity.setProduct(productEntity);
-            cartEntity.setQuantity(quantity);
+            CartEntity cartEntity = new CartEntity(id, accountEntity, productEntity, quantity);
             cartEntity = cartRepository.save(cartEntity);
             cartDTO = cartConvert.toDTO(cartEntity);
         } 
         else {
             CartEntity cartEntity = cartEntityList.get(index);
-            if (quantity + cartEntity.getQuantity() > productEntity.getQuantity()) {
+            int currentQuantity = cartEntity.getQuantity();
+            if (quantity + currentQuantity > productEntity.getQuantity()) {
                 throw new ApiRequestException("Quantity is greater than available");
             }
 
-            cartEntity.setQuantity(cartEntity.getQuantity() + quantity);
+            cartEntity.setQuantity(currentQuantity + quantity);
             cartEntity = cartRepository.save(cartEntity);
             cartDTO = cartConvert.toDTO(cartEntity);
         }

@@ -33,72 +33,72 @@ public class AdminController {
     private IAccountService accountService;
 
     /** BEGIN: CATEGORY */
-    @GetMapping("/category")
+    @GetMapping("/category/all")
     public List<CategoryDTO> getAllCategories() {
         return categoryService.getAllCategories();
     }
 
-    @PostMapping("/category/new")
+    @PostMapping("/category")
     public CategoryDTO addCategory(@RequestBody CategoryDTO dto) {
         return categoryService.addCategory(dto);
     }
 
-    @PutMapping("/category/updating/{id}")
+    @PutMapping("/category/{id}")
     public CategoryDTO updateCategory(@PathVariable("id") int id,
                                         @RequestBody CategoryDTO dto)
     {
         return categoryService.updateCategory(id, dto);
     }
     
-    @DeleteMapping("/category/deletion/{id}")
+    @DeleteMapping("/category/{id}")
     public CategoryDTO deleteCategory(@PathVariable("id") int id){
         return categoryService.deleteCategory(id);
     }
     /** END: CATEGORY */
 
     /** BEGIN: PRODUCT */
-    @PostMapping("/product/new")
+    @PostMapping("/product")
     public ProductDTO addProduct(@RequestBody ProductDTO dto){
         return productService.addProduct(dto);
     }
 
-    @GetMapping("/product")
+    @GetMapping("/product/all")
     public List<ProductDTO> getAllProducts(){
         return productService.getAllProducts();
     }
 
-    @PutMapping("/product/updating/{id}")
+    @PutMapping("/product/{id}")
     public ProductDTO updateProduct(@PathVariable("id") int id, 
                                        @RequestBody ProductDTO dto)
     {
         return productService.updateProduct(id, dto);
     }
 
-    @DeleteMapping("/product/deletion/{id}")
+    @DeleteMapping("/product/{id}")
     public ProductDTO deleteProduct(@PathVariable("id") int id){
         return productService.deleteProduct(id);
     }
     /** END: PRODUCT */
 
     /** BEGIN: ACCOUNT */
-    @PostMapping("/account/new")
+    @PostMapping("/account")
     public AccountDTO addAccount(@RequestBody AccountDTO dto){
         return accountService.addAccount(dto);
     }
 
-    @GetMapping("/account")
+    @GetMapping("/account/all")
     public List<AccountDTO> getAllAccounts(){
         return accountService.getAllAccounts();
     }
 
-    @PutMapping("/account/updating/{username}")
+    @PutMapping("/account/{username}")
     public AccountDTO updateAccount(@PathVariable("username") String username, 
                                        @RequestBody AccountDTO dto)
     {
         return accountService.updateAccount(username, dto);
     }
 
-    @DeleteMapping("/account/deletion/{username}")
+    @DeleteMapping("/account/{username}")
     public AccountDTO deleteAccount(@PathVariable("username") String username){
         return accountService.deleteAccount(username);
     }

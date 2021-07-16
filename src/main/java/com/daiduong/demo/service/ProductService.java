@@ -1,7 +1,6 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.daiduong.demo.convert.CategoryConvert;
@@ -52,6 +51,9 @@ public class ProductService implements IProductService {
                         + categoryId 
                         + " does not exist"
                     ));
+        if(categoryEntity.isDeleted()){
+            throw new ApiRequestException("The category was deleted");
+        }            
 
         if(name == null || name.length() == 0 || price <= 0 || quantity <= 0){
             throw new ApiRequestException("Fail to add product - try again");
@@ -77,13 +79,10 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductDTO> getAllProducts() {
-        List<ProductDTO> dtoList = new ArrayList<>();
+        
         List<ProductEntity> entityList = productRepository.findAll();
-        for (ProductEntity product : entityList) {
-            ProductDTO dto = productConvert.toDTO(product);
-            dtoList.add(dto);
-        }
-        return dtoList;
+        
+        return productConvert.toDTOList(entityList);
     }
 
     @Override
@@ -113,6 +112,10 @@ public class ProductService implements IProductService {
                             .orElseThrow(() -> new ApiRequestException(
                                 "The category " + id + " doesn not exist"
                             ));
+            if(categoryEntity.isDeleted()){
+                throw new ApiRequestException("The category was deleted");
+            }
+
             productEntity.setCategory(categoryEntity);   
             isUpdate = true;             
         }
@@ -166,24 +169,17 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductDTO> getProductNoDeleteQuantityMoreZero() {
-        List<ProductDTO> dtoList = new ArrayList<>();
+        
         List<ProductEntity> entityList = productRepository.getProductNoDeleteQuantityMoreZero();
-        for (ProductEntity productEntity : entityList) {
-            ProductDTO dto = productConvert.toDTO(productEntity);
-            dtoList.add(dto);
-        }
-        return dtoList;
+        
+        return productConvert.toDTOList(entityList);
     }
 
     @Override
     public List<ProductDTO> getProductByCategory(int categoryId) {
-        List<ProductDTO> dtoList = new ArrayList<>();
         List<ProductEntity> entityList = productRepository.getProductByCategory(categoryId);
-        for (ProductEntity productEntity : entityList) {
-            ProductDTO dto = productConvert.toDTO(productEntity);
-            dtoList.add(dto);
-        }      
-        return dtoList;
+        
+        return productConvert.toDTOList(entityList);
     }
 
     @Override
@@ -199,21 +195,13 @@ public class ProductService implements IProductService {
     @Override
     public HomePageCustomerDTO loadHomePageCustomer() {
         // list product
-        List<ProductDTO> productDTOList = new ArrayList<>();
         List<ProductEntity> productEntityList = productRepository.getProductNoDeleteQuantityMoreZero();
-        for (ProductEntity productEntity : productEntityList) {
-            ProductDTO productDTO = productConvert.toDTO(productEntity);
-            productDTOList.add(productDTO);
-        }
+        List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
         
         // list category
-        List<CategoryDTO> categoryDTOList = new ArrayList<>();
-        List<CategoryEntity> CategoryEntityList = categoryRepository.getCategoryNoDelete();
-        for (CategoryEntity categoryEntity : CategoryEntityList) {
-            CategoryDTO categoryDTO = categoryConvert.toDTO(categoryEntity);
-            categoryDTOList.add(categoryDTO);
-        }
-
+        List<CategoryEntity> categoryEntityList = categoryRepository.getCategoryNoDelete();
+        List<CategoryDTO> categoryDTOList = categoryConvert.toDTOList(categoryEntityList);
+        
         HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
 
         return home;
@@ -225,11 +213,7 @@ public class ProductService implements IProductService {
         Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
 
         List<ProductEntity> productEntityList = page.getContent();
-        List<ProductDTO> productDTOList = new ArrayList<>();
-        for (ProductEntity productEntity : productEntityList) {
-            ProductDTO productDTO = productConvert.toDTO(productEntity);
-            productDTOList.add(productDTO);
-        }
+        List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
 
         PagingProductDTO pagingProductDTO = new PagingProductDTO();
         pagingProductDTO.setCurrentPage(pageNo);

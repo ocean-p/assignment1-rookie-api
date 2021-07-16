@@ -1,5 +1,8 @@
 package com.daiduong.demo.convert;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.entity.AccountEntity;
 
@@ -31,5 +34,14 @@ public class AccountConvert {
         dto.setRole(entity.getRole());
         dto.setDeleted(entity.isDeleted());
         return dto;
+    }
+
+    public List<AccountDTO> toDTOList(List<AccountEntity> entityList){
+        List<AccountDTO> dtoList = new ArrayList<>();
+        for (AccountEntity accountEntity : entityList) {
+            AccountDTO dto = toDTO(accountEntity);
+            dtoList.add(dto);
+        }
+        return dtoList;
     }
 }

@@ -7,8 +7,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "cart")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CartEntity {
     
     @Id
@@ -25,47 +34,5 @@ public class CartEntity {
 
     @Column(name = "quantity")
     private int quantity;
-
-    public CartEntity() {
-    }
-
-    public CartEntity(int id, AccountEntity account, ProductEntity product, int quantity) {
-        this.id = id;
-        this.account = account;
-        this.product = product;
-        this.quantity = quantity;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public AccountEntity getAccount() {
-        return account;
-    }
-
-    public void setAccount(AccountEntity account) {
-        this.account = account;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
 
 }

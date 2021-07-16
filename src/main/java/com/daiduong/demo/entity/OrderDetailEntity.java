@@ -7,8 +7,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 @Entity
 @Table(name = "orderdetail")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class OrderDetailEntity {
     
     @Id
@@ -35,73 +44,4 @@ public class OrderDetailEntity {
     @Column(name = "total_price")
     private float totalPrice;
 
-    public OrderDetailEntity() {
-    }
-
-    public OrderDetailEntity(int orderDetailId, OrderEntity order, ProductEntity product, String productName,
-            float unitPrice, int quantity, float totalPrice) {
-        this.orderDetailId = orderDetailId;
-        this.order = order;
-        this.product = product;
-        this.productName = productName;
-        this.unitPrice = unitPrice;
-        this.quantity = quantity;
-        this.totalPrice = totalPrice;
-    }
-
-    public int getOrderDetailId() {
-        return orderDetailId;
-    }
-
-    public void setOrderDetailId(int orderDetailId) {
-        this.orderDetailId = orderDetailId;
-    }
-
-    public OrderEntity getOrder() {
-        return order;
-    }
-
-    public void setOrder(OrderEntity order) {
-        this.order = order;
-    }
-
-    public ProductEntity getProduct() {
-        return product;
-    }
-
-    public void setProduct(ProductEntity product) {
-        this.product = product;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public float getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(float unitPrice) {
-        this.unitPrice = unitPrice;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public float getTotalPrice() {
-        return totalPrice;
-    }
-
-    public void setTotalPrice(float totalPrice) {
-        this.totalPrice = totalPrice;
-    }
 }

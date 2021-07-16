@@ -1,16 +1,28 @@
 package com.daiduong.demo.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "product")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class ProductEntity {
 
     @Id
@@ -41,16 +53,15 @@ public class ProductEntity {
     @Column(name = "update_date")
     private LocalDate updateDate;
 
-    // @Column(name = "category_id")
     @ManyToOne
     @JoinColumn(name = "category_id")
     private CategoryEntity category;
 
     @Column(name = "is_delete")
     private boolean isDeleted;
-    
-    public ProductEntity() {
-    }
+
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
+    private List<RatingEntity> ratingEntityList;
 
     public ProductEntity(int id, String name, float price, String image, int quantity, String description,
             int averageRate, LocalDate createDate, LocalDate updateDate, CategoryEntity category, boolean isDeleted) {
@@ -66,93 +77,6 @@ public class ProductEntity {
         this.category = category;
         this.isDeleted = isDeleted;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getAverageRate() {
-        return averageRate;
-    }
-
-    public void setAverageRate(int averageRate) {
-        this.averageRate = averageRate;
-    }
-
-    public LocalDate getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(LocalDate createDate) {
-        this.createDate = createDate;
-    }
-
-    public LocalDate getUpdateDate() {
-        return updateDate;
-    }
-
-    public void setUpdateDate(LocalDate updateDate) {
-        this.updateDate = updateDate;
-    }
-
-    public CategoryEntity getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryEntity category) {
-        this.category = category;
-    }
-
-    public boolean isDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(boolean isDeleted) {
-        this.isDeleted = isDeleted;
-    }
-
+    
+    
 }
