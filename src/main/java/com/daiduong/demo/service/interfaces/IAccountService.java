@@ -1,9 +1,7 @@
 package com.daiduong.demo.service.interfaces;
 
-import java.util.List;
-
 import com.daiduong.demo.dto.AccountDTO;
-import com.daiduong.demo.dto.ListAccountByRoleDTO;
+import com.daiduong.demo.dto.ListAccountPagingDTO;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 
@@ -11,16 +9,21 @@ public interface IAccountService extends UserDetailsService{
     // add account
     public AccountDTO addAccount(AccountDTO account);
 
-    // get all account
-    public List<AccountDTO> getAllAccounts(); 
+    public AccountDTO getAccountByUserName(String username);
 
     // update account
     public AccountDTO updateCustomerAccountByAdmin(String username, AccountDTO newAccount);
 
     // delete account
-    public AccountDTO deleteCustomerAccountByAdmin(String username);
+    public String deleteCustomerAccountByAdmin(String username);
 
-    public ListAccountByRoleDTO getAllCustomerAccounts(int pageNo);
+    public String restoreAccount(String username);
 
-    public ListAccountByRoleDTO getAllAdminAccounts(int pageNo);
+    public ListAccountPagingDTO getAllCustomerAccountsNoDelete(int pageNo);
+
+    public ListAccountPagingDTO getAllAdminAccountsNoDelete(int pageNo);
+
+    public ListAccountPagingDTO getCustomerAccountsNoDeleteBySearch(String value, int pageNo);
+
+    public ListAccountPagingDTO getAllAccountsDeleted(int pageNo);
 }

@@ -1,12 +1,12 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import com.daiduong.demo.convert.AccountConvert;
+import com.daiduong.demo.convert.ListAccountPagingConvert;
 import com.daiduong.demo.dto.AccountDTO;
-import com.daiduong.demo.dto.ListAccountByRoleDTO;
+import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.AccountRepository;
@@ -33,6 +33,9 @@ public class AccountService implements IAccountService{
 
     @Autowired
     private AccountConvert accountConvert;
+
+    @Autowired
+    private ListAccountPagingConvert pagingConvert;
 
     @Override
     public AccountDTO addAccount(AccountDTO account) {
@@ -89,13 +92,6 @@ public class AccountService implements IAccountService{
         return accountConvert.toDTO(accountEntity);
     }
 
-    @Override
-    public List<AccountDTO> getAllAccounts(){
-        
-        List<AccountEntity> entityList = accountRepository.findAll();
-        
-        return accountConvert.toDTOList(entityList);
-    }
 
     @Override
     public AccountDTO updateCustomerAccountByAdmin(String username, AccountDTO newAccount){
@@ -152,7 +148,7 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public AccountDTO deleteCustomerAccountByAdmin(String username){
+    public String deleteCustomerAccountByAdmin(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
                                     "Username not found"
@@ -161,12 +157,31 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException("This username isn't of Customer account");
         }
 
-        if(account.isDeleted() == false){
-            account.setDeleted(true);
-            account.setUpdateDate(LocalDate.now());
+        if(account.isDeleted() == true){
+            throw new ApiRequestException("This account already deleted");
         }
+
+        account.setDeleted(true);
+        account.setUpdateDate(LocalDate.now());
         account = accountRepository.save(account);
-        return accountConvert.toDTO(account);
+        return "Delete Successfully!";
+    }
+
+    @Override
+    public String restoreAccount(String username){
+        AccountEntity account = accountRepository.findById(username)
+                                .orElseThrow(() -> new ApiRequestException(
+                                    "Username not found"
+                                ));
+
+        if(account.isDeleted() == false){
+            throw new ApiRequestException("This account already active");
+        }
+
+        account.setDeleted(false);
+        account.setUpdateDate(LocalDate.now());
+        account = accountRepository.save(account);
+        return "Restore Successfully!";
     }
 
     @Override
@@ -178,37 +193,74 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public ListAccountByRoleDTO getAllCustomerAccounts(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("createDate").descending());
-        Page<AccountEntity> page = accountRepository.findByRole("ROLE_CUSTOMER", pageable);
+    public ListAccountPagingDTO getAllCustomerAccountsNoDelete(int pageNo) {
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+        
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+        Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_CUSTOMER", false, pageable);
 
-        List<AccountEntity> accountEntityList = page.getContent();
-        List<AccountDTO> accountDTOList = accountConvert.toDTOList(accountEntityList);
-
-        ListAccountByRoleDTO result = new ListAccountByRoleDTO();
-        result.setCurrentPage(pageNo);
-        result.setTotalPages(page.getTotalPages());
-        result.setTotalItems(page.getTotalElements());
-        result.setAccountDTOList(accountDTOList);
-
+        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
         return result;
     }
 
     @Override
-    public ListAccountByRoleDTO getAllAdminAccounts(int pageNo) {
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("createDate").descending());
-        Page<AccountEntity> page = accountRepository.findByRole("ROLE_ADMIN", pageable);
+    public ListAccountPagingDTO getAllAdminAccountsNoDelete(int pageNo) {
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
 
-        List<AccountEntity> accountEntityList = page.getContent();
-        List<AccountDTO> accountDTOList = accountConvert.toDTOList(accountEntityList);
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+        Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_ADMIN", false, pageable);
 
-        ListAccountByRoleDTO result = new ListAccountByRoleDTO();
-        result.setCurrentPage(pageNo);
-        result.setTotalPages(page.getTotalPages());
-        result.setTotalItems(page.getTotalElements());
-        result.setAccountDTOList(accountDTOList);
-
+        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
         return result;
+    }
+
+    @Override
+    public ListAccountPagingDTO getCustomerAccountsNoDeleteBySearch(String value, int pageNo) {
+        if(value == null || value.trim().length() == 0){
+            throw new ApiRequestException("Value search is empty");
+        }
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+        
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+        Page<AccountEntity> page = accountRepository.findByUsernameContainingAndRoleAndIsDeleted(
+                                        value, "ROLE_CUSTOMER", false, pageable);
+
+        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+        return result;
+    }
+
+    @Override
+    public ListAccountPagingDTO getAllAccountsDeleted(int pageNo) {
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+        Page<AccountEntity> page = accountRepository.findByIsDeleted(true, pageable);
+
+        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+        return result;
+    }
+
+
+    @Override
+    public AccountDTO getAccountByUserName(String username) {
+        AccountEntity accountEntity = accountRepository.findById(username)
+                            .orElseThrow(() -> new ApiRequestException(
+                                "Username not found"));
+
+        if(accountEntity.getRole().equalsIgnoreCase("ROLE_ADMIN")){
+            throw new ApiRequestException("This isn't of customer account");
+        }
+
+        AccountDTO result = accountConvert.toDTO(accountEntity);
+        return result;                        
     }
 
 }

@@ -12,5 +12,10 @@ public interface AccountRepository extends
                 JpaRepository<AccountEntity, String>{
      Boolean existsByUsername(String username);
 
-     Page<AccountEntity> findByRole(String role, Pageable pageable);
+     Page<AccountEntity> findByRoleAndIsDeleted(String role, boolean isDeleted, Pageable pageable);
+     Page<AccountEntity> findByUsernameContainingAndRoleAndIsDeleted(String username, 
+                              String role, boolean isDeleted, Pageable pageable);
+                              
+     Page<AccountEntity> findByIsDeleted(boolean isDeleted, Pageable pageable);
+                              
 }

@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ListAccountByRoleDTO {
+public class ListAccountPagingDTO {
     private int currentPage;
     private int totalPages;
     private Long totalItems;

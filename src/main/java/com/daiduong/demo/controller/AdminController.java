@@ -4,8 +4,9 @@ import java.util.List;
 
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.CategoryDTO;
-import com.daiduong.demo.dto.ListAccountByRoleDTO;
+import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.dto.ProductDTO;
+import com.daiduong.demo.payload.response.MessageResponse;
 import com.daiduong.demo.service.interfaces.IAccountService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
@@ -90,9 +91,10 @@ public class AdminController {
         return accountService.addAccount(dto);
     }
 
-    @GetMapping("/account/all")
-    public List<AccountDTO> getAllAccounts(){
-        return accountService.getAllAccounts();
+    @GetMapping("/account/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public AccountDTO getAccountByUsername(@PathVariable("username") String username){
+        return accountService.getAccountByUserName(username);
     }
 
     @PutMapping("/account/{username}")
@@ -105,20 +107,40 @@ public class AdminController {
 
     @DeleteMapping("/account/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public AccountDTO deleteAccount(@PathVariable("username") String username){
-        return accountService.deleteCustomerAccountByAdmin(username);
+    public MessageResponse deleteCustomerAccount(@PathVariable("username") String username){
+        return new MessageResponse(accountService.deleteCustomerAccountByAdmin(username));
     }
+
+    @PostMapping("/account/restore/{username}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public MessageResponse restoreAccount(@PathVariable("username") String username){
+        return new MessageResponse(accountService.restoreAccount(username));
+    }     
 
     @GetMapping("/account/customer")
     @PreAuthorize("hasRole('ADMIN')")
-    public ListAccountByRoleDTO getAllCustomerAccounts(@RequestParam int page){
-        return accountService.getAllCustomerAccounts(page);
+    public ListAccountPagingDTO getAllCustomerAccountsNoDelete(@RequestParam int page){
+        return accountService.getAllCustomerAccountsNoDelete(page);
     }
 
     @GetMapping("/account/ad")
     @PreAuthorize("hasRole('ADMIN')")
-    public ListAccountByRoleDTO getAllAdminAccounts(@RequestParam int page){
-        return accountService.getAllAdminAccounts(page);
+    public ListAccountPagingDTO getAllAdminAccountsNoDelete(@RequestParam int page){
+        return accountService.getAllAdminAccountsNoDelete(page);
+    }
+
+    @GetMapping("/account")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListAccountPagingDTO getCustomerAccountsNoDeleteBySearch(@RequestParam(required = true) String value, 
+                                                    @RequestParam int page)
+    {
+        return accountService.getCustomerAccountsNoDeleteBySearch(value, page);
+    }
+    
+    @GetMapping("/account/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ListAccountPagingDTO getAllAccountsDeleted(@RequestParam int page){
+        return accountService.getAllAccountsDeleted(page);
     }
     /** END: ACCOUNT */
 }
