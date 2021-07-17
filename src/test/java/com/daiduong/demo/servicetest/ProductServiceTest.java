@@ -55,7 +55,7 @@ public class ProductServiceTest {
             currentDate, currentDate, categoryEntity1, false
         );
         ProductEntity productEntity2 = new ProductEntity(
-            2, "product2", 200, "img", 20, "product2", 0,
+            2, "product2", 0, "img", 20, "product2", 0,
             currentDate, currentDate, categoryEntity1, false
         );
         productEntityList = new ArrayList<>();
@@ -127,11 +127,23 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void getAllProductsTest() {
-        when(productRepository.findAll()).thenReturn(productEntityList);
+    public void getProductByIdTest() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(productEntityList.get(0)));
 
-        List<ProductDTO> dtoList = productService.getAllProducts();
+        ProductDTO productDTO = productService.getProductById(anyInt());
 
-        assertEquals(2, dtoList.size());
+        assertEquals(1, productDTO.getId());
+        assertEquals("product1", productDTO.getName());
+    }
+
+    @Test
+    public void updateProductFailTest() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(productEntityList.get(1)));
+        when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(categoryEntity1));
+
+        assertThrows(ApiRequestException.class, () -> {
+            productService.updateProduct(anyInt(), productConvert.toDTO(productEntityList.get(1)));
+        });
+           
     }
 }

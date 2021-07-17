@@ -15,6 +15,10 @@ import com.daiduong.demo.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @SpringBootTest
 public class ProductRepositoryTest {
@@ -94,42 +98,35 @@ public class ProductRepositoryTest {
     }
 
     @Test
-    public void noDeleteQuantityMoreZeroTest() {
-        boolean isFail = false;
-        List<ProductEntity> list = productRepository.getProductNoDeleteQuantityMoreZero();
+    public void findByIsDeletedTest() {
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("updateDate").descending());
+        Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
+
+        boolean isFailed = false;
+        List<ProductEntity> list = page.getContent();
         for (ProductEntity productEntity : list) {
-            if(productEntity.getQuantity() <= 0 || productEntity.isDeleted() == true){
-                isFail = true;
+            if(productEntity.isDeleted()) {
+                isFailed = true;
             }
         }
 
-        assertEquals(false, isFail);
+        assertEquals(false, isFailed);
     }
 
     @Test
-    public void getProductByCategoryTest(){
-        boolean isFail = false;
+    public void findByCategoryAndIsDeletedTest(){
         CategoryEntity category = categoryRepository.findById(1).orElseThrow();
-        int categoryId = category.getId();
-        List<ProductEntity> list = productRepository.getProductByCategory(1);
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("updateDate").descending());
+        Page<ProductEntity> page = productRepository.findByCategoryAndIsDeleted(category, false, pageable);
+    
+        boolean isFailed = false;
+        List<ProductEntity> list = page.getContent();
         for (ProductEntity productEntity : list) {
-            if(categoryId != productEntity.getCategory().getId() 
-                || productEntity.getQuantity() <= 0
-                || productEntity.isDeleted() == true) 
-            {
-                isFail = true;
+            if(productEntity.isDeleted() || productEntity.getCategory().getId() != 1){
+                isFailed = true;
             }
         }
-
-        assertEquals(false, isFail);
+        assertEquals(false, isFailed);
     }
 
-    @Test
-    public void byIdMoreZeroNoDeleteTest() {
-        assertThrows(ApiRequestException.class, () -> {
-            productRepository.getProductById(3).orElseThrow(() -> new ApiRequestException(
-                "This product not found, deleted or out of stock"
-            ));
-        });
-    }
 }

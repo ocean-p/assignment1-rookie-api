@@ -1,12 +1,11 @@
 package com.daiduong.demo.controller;
 
-import java.util.List;
-
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.CategoryPagingDTO;
 import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.dto.ProductDTO;
+import com.daiduong.demo.dto.ProductPagingDTO;
 import com.daiduong.demo.payload.response.MessageResponse;
 import com.daiduong.demo.service.interfaces.IAccountService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
@@ -93,26 +92,64 @@ public class AdminController {
 
     /** BEGIN: PRODUCT */
     @PostMapping("/product")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductDTO addProduct(@RequestBody ProductDTO dto){
         return productService.addProduct(dto);
     }
 
-    @GetMapping("/product/all")
-    public List<ProductDTO> getAllProducts(){
-        return productService.getAllProducts();
-    }
-
     @PutMapping("/product/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ProductDTO updateProduct(@PathVariable("id") int id, 
-                                       @RequestBody ProductDTO dto)
+                                    @RequestBody ProductDTO dto)
     {
         return productService.updateProduct(id, dto);
     }
 
     @DeleteMapping("/product/{id}")
-    public ProductDTO deleteProduct(@PathVariable("id") int id){
-        return productService.deleteProduct(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public MessageResponse deleteProduct(@PathVariable("id") int id){
+        return new MessageResponse(productService.deleteProduct(id));
     }
+
+    @PostMapping("/product/restore/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public MessageResponse restoreProduct(@PathVariable("id") int id){
+        return new MessageResponse(productService.restoreProduct(id));
+    }
+
+    @GetMapping("/product")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductPagingDTO getAllProductsNoDelete(@RequestParam int page){
+        return productService.getAllProductsNoDelete(page);
+    }
+
+    @GetMapping("/product/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductPagingDTO getAllProductsDeletedDto(@RequestParam int page){
+        return productService.getAllProductsDeleted(page);
+    }
+
+    @GetMapping("/product/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductPagingDTO searchProductNoDeleteByName(@RequestParam String value, 
+                                                        @RequestParam int page)
+    {
+        return productService.searchProductNoDeleteByName(value, page);
+    }
+
+    @GetMapping("/product/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductDTO getProductById(@PathVariable("id") int id){
+        return productService.getProductById(id);
+    }
+
+    @GetMapping("/product/category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ProductPagingDTO getProductNoDeleteByCategory(@RequestParam int id, 
+                                                        @RequestParam int page)
+    {
+        return productService.getProductNoDeleteByCategory(id, page);
+    }                                                    
     /** END: PRODUCT */
 
     /** BEGIN: ACCOUNT */

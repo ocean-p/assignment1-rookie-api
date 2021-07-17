@@ -1,8 +1,6 @@
 package com.daiduong.demo.repository;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
 
 import org.springframework.data.domain.Page;
@@ -19,31 +17,7 @@ public interface ProductRepository extends
             nativeQuery = true)                
     Integer findMaxId();
 
-    @Query(value = "select * \n"
-                + "from product\n"
-                + "where is_delete = false\n"
-                + "and quantity > 0\n"
-                + "order by create_date desc\n", 
-        nativeQuery = true)
-    List<ProductEntity> getProductNoDeleteQuantityMoreZero();
-
-    @Query(value = "select * \n"
-                + "from product\n"
-                + "where is_delete = false\n"
-                + "and quantity > 0\n"
-                + "and category_id = ?1\n"
-                + "order by create_date desc\n", 
-        nativeQuery = true)
-    List<ProductEntity> getProductByCategory(int categoryId);
-
-    @Query(value = "select * \n"
-                + "from product\n"
-                + "where is_delete = false\n"
-                + "and quantity > 0\n"
-                + "and product_id = ?1\n"
-                + "order by create_date desc\n", 
-        nativeQuery = true)
-    Optional<ProductEntity> getProductById(int productId);
-
-    Page<ProductEntity> findByIsDeleted(boolean isDelete, Pageable pageable);
+    Page<ProductEntity> findByIsDeleted(boolean isDeleted, Pageable pageable);
+    Page<ProductEntity> findByNameContainingAndIsDeleted(String name, boolean isDeleted, Pageable pageable);
+    Page<ProductEntity> findByCategoryAndIsDeleted(CategoryEntity category, boolean isDeleted, Pageable pageable);
 }

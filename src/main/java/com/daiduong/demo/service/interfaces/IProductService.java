@@ -1,35 +1,25 @@
 package com.daiduong.demo.service.interfaces;
 
-import java.util.List;
-
-import com.daiduong.demo.dto.HomePageCustomerDTO;
-import com.daiduong.demo.dto.PagingProductDTO;
 import com.daiduong.demo.dto.ProductDTO;
+import com.daiduong.demo.dto.ProductPagingDTO;
 
 public interface IProductService {
-    // add new product
+    
     public ProductDTO addProduct(ProductDTO product);
 
-    // get all products
-    public List<ProductDTO> getAllProducts();
-
-    // update products
     public ProductDTO updateProduct(int id, ProductDTO product);
 
-    // delete product
-    public ProductDTO deleteProduct(int id);
+    public String deleteProduct(int id);
 
-    // get list product no delete, quantity > 0
-    public List<ProductDTO> getProductNoDeleteQuantityMoreZero();
+    public String restoreProduct(int id);
 
-    // get product by category
-    public List<ProductDTO> getProductByCategory(int categoryId);
+    public ProductPagingDTO getAllProductsNoDelete(int pageNo);
 
-    // get product by id - details
-    public ProductDTO getProductById(int productId);
+    public ProductPagingDTO getAllProductsDeleted(int pageNo);
 
-    // home page for customer
-    public HomePageCustomerDTO loadHomePageCustomer();
+    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo);
 
-    public PagingProductDTO pagingProductNoDelete(int pageNo, int pageSize);
+    public ProductDTO getProductById(int id);
+
+    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo);
 }

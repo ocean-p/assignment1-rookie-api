@@ -1,14 +1,12 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
-import java.util.List;
 
-import com.daiduong.demo.convert.CategoryConvert;
 import com.daiduong.demo.convert.ProductConvert;
-import com.daiduong.demo.dto.CategoryDTO;
-import com.daiduong.demo.dto.HomePageCustomerDTO;
-import com.daiduong.demo.dto.PagingProductDTO;
+import com.daiduong.demo.convert.ProductPagingConvert;
+
 import com.daiduong.demo.dto.ProductDTO;
+import com.daiduong.demo.dto.ProductPagingDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.exception.ApiRequestException;
@@ -36,7 +34,7 @@ public class ProductService implements IProductService {
     private ProductConvert productConvert;
 
     @Autowired
-    private CategoryConvert categoryConvert;
+    private ProductPagingConvert productPagingConvert;
 
     @Override
     public ProductDTO addProduct(ProductDTO product) {
@@ -44,19 +42,29 @@ public class ProductService implements IProductService {
         float price = product.getPrice();
         int quantity = product.getQuantity();
         int categoryId = product.getCategoryId();
+        String img = product.getImage();
 
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-                    .orElseThrow(() -> new ApiRequestException(
-                        "Fail to add product - The categoryId:"
-                        + categoryId 
-                        + " does not exist"
-                    ));
+                .orElseThrow(() -> new ApiRequestException("The category " + categoryId + " not found"));
+        
         if(categoryEntity.isDeleted()){
             throw new ApiRequestException("The category was deleted");
         }            
 
-        if(name == null || name.length() == 0 || price <= 0 || quantity <= 0){
-            throw new ApiRequestException("Fail to add product - try again");
+        if(name == null || name.length() == 0){
+            throw new ApiRequestException("ERR: Name is empty");
+        }
+
+        if(img == null || img.length() == 0){
+            throw new ApiRequestException("ERR: ImageUrl is empty");
+        }
+
+        if(String.valueOf(price) == null || price <= 0){
+            throw new ApiRequestException("ERR: Price < 0");
+        }
+
+        if(String.valueOf(quantity) == null || quantity <= 0){
+            throw new ApiRequestException("ERR: Quantity < 0");
         }
 
         ProductEntity productEntity = productConvert.toEntity(product);
@@ -78,150 +86,150 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() {
-        
-        List<ProductEntity> entityList = productRepository.findAll();
-        
-        return productConvert.toDTOList(entityList);
-    }
-
-    @Override
     public ProductDTO updateProduct(int id, ProductDTO product) {
         ProductEntity productEntity = productRepository.findById(id)
-                    .orElseThrow(() -> new ApiRequestException(
-                        "The product with id:" + id + " does not exist"
-                    ));
+            .orElseThrow(() -> new ApiRequestException(
+                    "The product " + id + " not found"));
+        
+        if(productEntity.isDeleted()){
+            throw new ApiRequestException("The product was deleted");
+        }            
+
+        int newCategoryId = product.getCategoryId();
+        CategoryEntity categoryEntity = categoryRepository.findById(newCategoryId)
+                .orElseThrow(() -> new ApiRequestException("The category not found"));
+
+        if(categoryEntity.isDeleted()){
+            throw new ApiRequestException("The category was deleted");
+        }        
+
         String newName = product.getName();
         String newImg = product.getImage();
         String newDes = product.getDescription();
         float newPrice = product.getPrice();
         int newQuantity = product.getQuantity();
-        int newCategoryId = product.getCategoryId();
+
+        if(newName == null || newName.length() == 0){
+            throw new ApiRequestException("ERR: Name is empty");
+        }
+        if(newImg == null || newImg.length() == 0){
+            throw new ApiRequestException("ERR: ImageURL is empty");
+        }
+        if(newDes == null || newDes.length() == 0){
+            throw new ApiRequestException("ERR: Description is empty");
+        }
+        if(String.valueOf(newPrice) == null || newPrice <= 0){
+            throw new ApiRequestException("ERR: Price < 0");
+        }
+        if(String.valueOf(newQuantity) == null || newQuantity <= 0){
+            throw new ApiRequestException("ERR: Quantity < 0");
+        }
         
-        String oldName = productEntity.getName();
-        String oldImg = productEntity.getImage();
-        String oldDes = productEntity.getDescription();
-        float oldPrice = productEntity.getPrice();
-        int oldQuantity = productEntity.getQuantity();
-        int oldCategoryId = productEntity.getCategory().getId();
-
-        boolean isUpdate = false;
-
-        if(newCategoryId > 0 && newCategoryId != oldCategoryId){
-            CategoryEntity categoryEntity = categoryRepository.findById(newCategoryId)
-                            .orElseThrow(() -> new ApiRequestException(
-                                "The category " + id + " doesn not exist"
-                            ));
-            if(categoryEntity.isDeleted()){
-                throw new ApiRequestException("The category was deleted");
-            }
-
-            productEntity.setCategory(categoryEntity);   
-            isUpdate = true;             
-        }
-
-        if(newName != null && newName.length() > 0 && !newName.equals(oldName)){
-            productEntity.setName(newName);
-            isUpdate = true;
-        }
-
-        if(String.valueOf(newPrice) != null && newPrice != oldPrice && newPrice > 0){
-            productEntity.setPrice(newPrice);
-            isUpdate = true;
-        }
-
-        if(newImg != null && newImg.length() > 0 && !newImg.equals(oldImg)){
-            productEntity.setImage(newImg);
-            isUpdate = true;
-        }
-
-        if(newDes != null && newDes.length() > 0 && !newDes.equals(oldDes)){
-            productEntity.setDescription(newDes);
-            isUpdate = true;
-        }
-
-        if(String.valueOf(newQuantity) != null && newQuantity != oldQuantity && newQuantity > 0){
-            productEntity.setQuantity(newQuantity);
-            isUpdate = true;
-        }
-
-        if(isUpdate){
-            productEntity.setUpdateDate(LocalDate.now());
-        }
-
+        productEntity.setName(newName);
+        productEntity.setImage(newImg);
+        productEntity.setDescription(newDes);
+        productEntity.setPrice(newPrice);
+        productEntity.setQuantity(newQuantity);
+        productEntity.setCategory(categoryEntity);
+        productEntity.setUpdateDate(LocalDate.now());
         productEntity = productRepository.save(productEntity);
         return productConvert.toDTO(productEntity);
     }
 
     @Override
-    public ProductDTO deleteProduct(int id){
+    public String deleteProduct(int id){
         ProductEntity productEntity = productRepository.findById(id)
                     .orElseThrow(() -> new ApiRequestException(
-                        "The product with id:" + id + " does not exist"
+                        "The product " + id + " not found"
+                    ));
+        if(productEntity.isDeleted()){
+            throw new ApiRequestException("The product already deleted");
+        }
+        
+        productEntity.setDeleted(true);
+        productEntity.setUpdateDate(LocalDate.now());
+        productEntity = productRepository.save(productEntity);
+
+        return "Delete Successfully!";         
+    }
+
+    @Override
+    public String restoreProduct(int id) {
+        ProductEntity productEntity = productRepository.findById(id)
+                    .orElseThrow(() -> new ApiRequestException(
+                        "The product " + id + " not found"
                     ));
         if(productEntity.isDeleted() == false){
-            productEntity.setDeleted(true);
-            productEntity.setUpdateDate(LocalDate.now());
+            throw new ApiRequestException("The product already active");
         }
+        
+        productEntity.setDeleted(false);
+        productEntity.setUpdateDate(LocalDate.now());
         productEntity = productRepository.save(productEntity);
-        return productConvert.toDTO(productEntity);            
+
+        return "Restore Successfully!";  
     }
 
     @Override
-    public List<ProductDTO> getProductNoDeleteQuantityMoreZero() {
-        
-        List<ProductEntity> entityList = productRepository.getProductNoDeleteQuantityMoreZero();
-        
-        return productConvert.toDTOList(entityList);
-    }
-
-    @Override
-    public List<ProductDTO> getProductByCategory(int categoryId) {
-        List<ProductEntity> entityList = productRepository.getProductByCategory(categoryId);
-        
-        return productConvert.toDTOList(entityList);
-    }
-
-    @Override
-    public ProductDTO getProductById(int productId) {
-        ProductEntity productEntity = productRepository.getProductById(productId)
-                    .orElseThrow(() -> new ApiRequestException(
-                        "Product " + productId + " not found , out of stock or was deleted"
-                    ));
-        ProductDTO productDTO = productConvert.toDTO(productEntity);            
-        return productDTO;
-    }
-
-    @Override
-    public HomePageCustomerDTO loadHomePageCustomer() {
-        // list product
-        // List<ProductEntity> productEntityList = productRepository.getProductNoDeleteQuantityMoreZero();
-        // List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
-        
-        // // list category
-        // List<CategoryEntity> categoryEntityList = categoryRepository.getCategoryNoDelete();
-        // List<CategoryDTO> categoryDTOList = categoryConvert.toDTOList(categoryEntityList);
-        
-        // HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
-
-        // return home;
-        return null;
-    }
-
-    @Override
-    public PagingProductDTO pagingProductNoDelete(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo-1, pageSize, Sort.by("createDate").descending());
+    public ProductPagingDTO getAllProductsNoDelete(int pageNo) {
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
         Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
-
-        List<ProductEntity> productEntityList = page.getContent();
-        List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
-
-        PagingProductDTO pagingProductDTO = new PagingProductDTO();
-        pagingProductDTO.setCurrentPage(pageNo);
-        pagingProductDTO.setTotalPages(page.getTotalPages());
-        pagingProductDTO.setTotalItems(page.getTotalElements());
-        pagingProductDTO.setProductList(productDTOList);
-
-        return pagingProductDTO;
+        
+        return productPagingConvert.convert(pageNo, page);
     }
+
+    @Override
+    public ProductPagingDTO getAllProductsDeleted(int pageNo) {
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Page<ProductEntity> page = productRepository.findByIsDeleted(true, pageable);
+        
+        return productPagingConvert.convert(pageNo, page);
+    }
+
+    @Override
+    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo) {
+        if(value == null || value.length() == 0){
+            throw new ApiRequestException("ERR: Value is empty");
+        }
+        
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Page<ProductEntity> page = productRepository.findByNameContainingAndIsDeleted(
+                                                value, false, pageable);
+        return productPagingConvert.convert(pageNo, page);                                        
+    }
+
+    @Override
+    public ProductDTO getProductById(int id) {
+        ProductEntity productEntity = productRepository.findById(id)
+                .orElseThrow(() -> new ApiRequestException("The product not found"));
+        return productConvert.toDTO(productEntity);        
+    }
+
+    @Override
+    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo) {
+        CategoryEntity category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ApiRequestException("The category not found"));
+        
+        if(pageNo < 1){
+            throw new ApiRequestException("Page must be more than zero");
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Page<ProductEntity> page = productRepository.findByCategoryAndIsDeleted(
+                                    category, false, pageable);
+        return productPagingConvert.convert(pageNo, page);
+    }
+
+    
+
+    
 }
