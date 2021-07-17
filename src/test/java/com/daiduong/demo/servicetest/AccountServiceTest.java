@@ -88,10 +88,12 @@ public class AccountServiceTest {
         });
     }
 
-    // @Test
-    // public void getAllAccountsTest() {
-    //     when(accountRepository.findAll()).thenReturn(accountEntityList);
-    //     List<AccountDTO> accountDTOList = accountService.getAllAccounts();
-    //     assertEquals(2, accountDTOList.size());
-    // }
+    @Test
+    public void getAccountsByUsernameTest() {
+        when(accountRepository.findById(anyString())).thenReturn(Optional.of(accountEntityList.get(0)));
+        
+        AccountDTO dto = accountService.getAccountByUserName(anyString());
+
+        assertEquals("hello", dto.getUsername());
+    }
 }

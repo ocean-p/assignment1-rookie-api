@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.CategoryDTO;
+import com.daiduong.demo.dto.CategoryPagingDTO;
 import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.payload.response.MessageResponse;
@@ -37,17 +38,20 @@ public class AdminController {
     private IAccountService accountService;
 
     /** BEGIN: CATEGORY */
-    @GetMapping("/category/all")
-    public List<CategoryDTO> getAllCategories() {
-        return categoryService.getAllCategories();
+    @GetMapping("/category/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryDTO getCategoryById(@PathVariable("id") int id){
+        return categoryService.getCategoryById(id);
     }
 
     @PostMapping("/category")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryDTO addCategory(@RequestBody CategoryDTO dto) {
         return categoryService.addCategory(dto);
     }
 
     @PutMapping("/category/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryDTO updateCategory(@PathVariable("id") int id,
                                         @RequestBody CategoryDTO dto)
     {
@@ -55,8 +59,35 @@ public class AdminController {
     }
     
     @DeleteMapping("/category/{id}")
-    public CategoryDTO deleteCategory(@PathVariable("id") int id){
-        return categoryService.deleteCategory(id);
+    @PreAuthorize("hasRole('ADMIN')")
+    public MessageResponse deleteCategory(@PathVariable("id") int id){
+        return new MessageResponse(categoryService.deleteCategory(id));
+    }
+
+    @PostMapping("/category/restore/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public MessageResponse restoreCategory(@PathVariable("id") int id){
+        return new MessageResponse(categoryService.restoreCategory(id));
+    }
+
+    @GetMapping("/category")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryPagingDTO getAllCategoriesNoDelete(@RequestParam int page){
+        return categoryService.getAllCategoriesNoDelete(page);
+    }
+
+    @GetMapping("/category/deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryPagingDTO getAllCategoriesDeleted(@RequestParam int page){
+        return categoryService.getAllCategoriesDeleted(page);
+    }
+
+    @GetMapping("/category/search")
+    @PreAuthorize("hasRole('ADMIN')")
+    public CategoryPagingDTO searchCategoryNoDeleted(@RequestParam String value, 
+                                                    @RequestParam  int page)
+    {
+        return categoryService.searchCategoryNoDeleted(value, page);
     }
     /** END: CATEGORY */
 
@@ -114,7 +145,7 @@ public class AdminController {
     @PostMapping("/account/restore/{username}")
     @PreAuthorize("hasRole('ADMIN')")
     public MessageResponse restoreAccount(@PathVariable("username") String username){
-        return new MessageResponse(accountService.restoreAccount(username));
+        return new MessageResponse(accountService.restoreCustomerAccount(username));
     }     
 
     @GetMapping("/account/customer")

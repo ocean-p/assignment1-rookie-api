@@ -104,6 +104,10 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException("This username isn't of Customer account");
         }
 
+        if(oldAccount.isDeleted()){
+            throw new ApiRequestException("This account was deleted");
+        }
+
         String newFullName = newAccount.getFullName();
         String newPhone = newAccount.getPhone();
         String newAddress = newAccount.getAddress();
@@ -168,12 +172,15 @@ public class AccountService implements IAccountService{
     }
 
     @Override
-    public String restoreAccount(String username){
+    public String restoreCustomerAccount(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
                                     "Username not found"
                                 ));
-
+        if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+            throw new ApiRequestException("This username isn't of Customer account");
+        }
+        
         if(account.isDeleted() == false){
             throw new ApiRequestException("This account already active");
         }
@@ -254,11 +261,6 @@ public class AccountService implements IAccountService{
         AccountEntity accountEntity = accountRepository.findById(username)
                             .orElseThrow(() -> new ApiRequestException(
                                 "Username not found"));
-
-        if(accountEntity.getRole().equalsIgnoreCase("ROLE_ADMIN")){
-            throw new ApiRequestException("This isn't of customer account");
-        }
-
         AccountDTO result = accountConvert.toDTO(accountEntity);
         return result;                        
     }

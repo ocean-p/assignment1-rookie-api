@@ -195,16 +195,17 @@ public class ProductService implements IProductService {
     @Override
     public HomePageCustomerDTO loadHomePageCustomer() {
         // list product
-        List<ProductEntity> productEntityList = productRepository.getProductNoDeleteQuantityMoreZero();
-        List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
+        // List<ProductEntity> productEntityList = productRepository.getProductNoDeleteQuantityMoreZero();
+        // List<ProductDTO> productDTOList = productConvert.toDTOList(productEntityList);
         
-        // list category
-        List<CategoryEntity> categoryEntityList = categoryRepository.getCategoryNoDelete();
-        List<CategoryDTO> categoryDTOList = categoryConvert.toDTOList(categoryEntityList);
+        // // list category
+        // List<CategoryEntity> categoryEntityList = categoryRepository.getCategoryNoDelete();
+        // List<CategoryDTO> categoryDTOList = categoryConvert.toDTOList(categoryEntityList);
         
-        HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
+        // HomePageCustomerDTO home = new HomePageCustomerDTO(categoryDTOList, productDTOList);
 
-        return home;
+        // return home;
+        return null;
     }
 
     @Override

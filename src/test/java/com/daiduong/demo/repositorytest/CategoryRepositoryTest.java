@@ -13,6 +13,10 @@ import com.daiduong.demo.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @SpringBootTest
 public class CategoryRepositoryTest {
@@ -76,18 +80,6 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void getCategoryNoDeleteTest() {
-        boolean isDelete = false;
-        List<CategoryEntity> list = categoryRepository.getCategoryNoDelete();
-        for (CategoryEntity categoryEntity : list) {
-            if(categoryEntity.isDeleted() == true) {
-                isDelete = true;
-            }
-        }
-        assertEquals(false, isDelete);
-    }
-
-    @Test
     public void notFoundById(){
         assertThrows(ApiRequestException.class, () -> {
             categoryRepository.findById(100)
@@ -95,5 +87,21 @@ public class CategoryRepositoryTest {
                 "Category 100 not found"
             ));
         });
+    }
+
+    @Test
+    public void findByIsDeletedTest() {
+        Pageable pageable = PageRequest.of(0 , 5, Sort.by("updateDate").descending());
+        Page<CategoryEntity> page = categoryRepository.findByIsDeleted(true, pageable);
+
+        boolean isFailed = false;
+        List<CategoryEntity> list = page.getContent();
+        for (CategoryEntity categoryEntity : list) {
+            if(categoryEntity.isDeleted() == false) {
+                isFailed = true;
+            }
+        }
+
+        assertEquals(false, isFailed);
     }
 }

@@ -14,6 +14,10 @@ import com.daiduong.demo.repository.AccountRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @SpringBootTest
 public class AccountRepositoryTest {
@@ -69,5 +73,21 @@ public class AccountRepositoryTest {
     public void findAllTest() {
         List<AccountEntity> accountEntityList = accountRepository.findAll();
         assertEquals(10, accountEntityList.size());
+    }
+
+    @Test
+    public void findByIsDeletedTest(){
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("updateDate").descending());
+        Page<AccountEntity> page = accountRepository.findByIsDeleted(true, pageable);
+
+        boolean isFailed = false;
+        List<AccountEntity> accountEntityList = page.getContent();
+        for (AccountEntity accountEntity : accountEntityList) {
+            if(accountEntity.isDeleted() == false){
+                isFailed = true;
+            }
+        }
+
+        assertEquals(false, isFailed);
     }
 }

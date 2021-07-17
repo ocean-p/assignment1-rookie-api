@@ -35,10 +35,10 @@ public class CustomerController {
         return "<h1>This is Customer page</h1>";
     }
 
-    @GetMapping("/category")
-    public List<CategoryDTO> getCategoryNoDelete(){
-        return categoryService.getCategoryNoDelete();
-    }
+    // @GetMapping("/category")
+    // public List<CategoryDTO> getCategoryNoDelete(){
+    //     return categoryService.getCategoryNoDelete();
+    // }
 
     @GetMapping("/product")
     public List<ProductDTO> getProductNoDeleteQuantityMoreZero(){

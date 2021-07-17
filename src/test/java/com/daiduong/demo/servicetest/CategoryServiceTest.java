@@ -3,11 +3,13 @@ package com.daiduong.demo.servicetest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.daiduong.demo.convert.CategoryConvert;
 import com.daiduong.demo.dto.CategoryDTO;
@@ -43,7 +45,7 @@ public class CategoryServiceTest {
             1, "jacket", "jacket", currentDate, currentDate, false
         );
         CategoryEntity categoryEntity2 = new CategoryEntity(
-            2, "jeans", "jeans", currentDate, currentDate, false
+            2, "jeans", "jeans", currentDate, currentDate, true
         );
         categoryEntityList = new ArrayList<>();
         categoryEntityList.add(categoryEntity1);
@@ -51,12 +53,13 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void getAllCategoriesTest() {
-        when(categoryRepository.findAll()).thenReturn(categoryEntityList);
+    public void getCategoryByIdTest() {
+        when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(categoryEntityList.get(0)));
 
-        List<CategoryDTO> categoryDTOList = categoryService.getAllCategories();
+       CategoryDTO dto = categoryService.getCategoryById(anyInt());
 
-        assertEquals(2, categoryDTOList.size());
+       assertEquals(1, dto.getId());
+       assertEquals("jacket", dto.getName());
     }
 
     @Test
@@ -86,7 +89,12 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void updateCategoryByIdCaseTest() {
-        
+    public void updateCategoryTest() {
+        when(categoryRepository.findById(anyInt())).thenReturn(Optional.of(categoryEntityList.get(1)));
+
+        assertThrows(ApiRequestException.class, () -> {
+            categoryService.updateCategory(anyInt(), new CategoryDTO(
+                    1, "", "", LocalDate.now(),LocalDate.now(), false));
+        });
     }
 }

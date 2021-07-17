@@ -1,9 +1,9 @@
 package com.daiduong.demo.repository;
 
-import java.util.List;
-
 import com.daiduong.demo.entity.CategoryEntity;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,10 +16,6 @@ public interface CategoryRepository extends
             nativeQuery = true)                
     Integer findMaxId();
 
-    @Query(value = "select *\n"
-                   + "from category\n" 
-                   + "where is_delete = false\n"
-                   + "order by create_date desc\n",
-           nativeQuery = true)
-    List<CategoryEntity> getCategoryNoDelete();
+    Page<CategoryEntity> findByIsDeleted(boolean isDeleted, Pageable pageable);
+    Page<CategoryEntity> findByNameContainingAndIsDeleted(String name, boolean isDeleted, Pageable pageable);
 }
