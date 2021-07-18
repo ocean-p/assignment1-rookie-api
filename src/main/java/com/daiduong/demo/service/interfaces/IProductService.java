@@ -13,13 +13,14 @@ public interface IProductService {
 
     public String restoreProduct(int id);
 
-    public ProductPagingDTO getAllProductsNoDelete(int pageNo);
+    public ProductPagingDTO getAllProductsNoDelete(int pageNo, String valueSort);
 
-    public ProductPagingDTO getAllProductsDeleted(int pageNo);
+    public ProductPagingDTO getAllProductsDeleted(int pageNo, String valueSort);
 
-    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo);
+    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo, String valueSort);
 
     public ProductDTO getProductById(int id);
 
-    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo);
+    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo, String valueSort);
+
 }

@@ -1,5 +1,7 @@
 package com.daiduong.demo.service.interfaces;
 
+import java.util.List;
+
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.CategoryPagingDTO;
 
@@ -20,4 +22,7 @@ public interface ICategoryService {
     public CategoryPagingDTO getAllCategoriesDeleted(int pageNo);
 
     public CategoryPagingDTO searchCategoryNoDeleted(String value, int pageNo);
+
+    //for customer
+    public List<CategoryDTO> getCategoryMenu();
 }

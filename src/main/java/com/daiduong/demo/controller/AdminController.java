@@ -120,13 +120,13 @@ public class AdminController {
     @GetMapping("/product")
     @PreAuthorize("hasRole('ADMIN')")
     public ProductPagingDTO getAllProductsNoDelete(@RequestParam int page){
-        return productService.getAllProductsNoDelete(page);
+        return productService.getAllProductsNoDelete(page, "updateDate");
     }
 
     @GetMapping("/product/deleted")
     @PreAuthorize("hasRole('ADMIN')")
     public ProductPagingDTO getAllProductsDeletedDto(@RequestParam int page){
-        return productService.getAllProductsDeleted(page);
+        return productService.getAllProductsDeleted(page, "updateDate");
     }
 
     @GetMapping("/product/search")
@@ -134,7 +134,7 @@ public class AdminController {
     public ProductPagingDTO searchProductNoDeleteByName(@RequestParam String value, 
                                                         @RequestParam int page)
     {
-        return productService.searchProductNoDeleteByName(value, page);
+        return productService.searchProductNoDeleteByName(value, page, "updateDate");
     }
 
     @GetMapping("/product/{id}")
@@ -148,7 +148,7 @@ public class AdminController {
     public ProductPagingDTO getProductNoDeleteByCategory(@RequestParam int id, 
                                                         @RequestParam int page)
     {
-        return productService.getProductNoDeleteByCategory(id, page);
+        return productService.getProductNoDeleteByCategory(id, page, "updateDate");
     }                                                    
     /** END: PRODUCT */
 

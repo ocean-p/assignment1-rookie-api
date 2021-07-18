@@ -14,6 +14,6 @@ import lombok.Setter;
 public class HomePageCustomerDTO {
     
     private List<CategoryDTO> categoryList;
-    private List<ProductDTO> productList;
+    private ProductPagingDTO productPaging;
 
 }

@@ -9,10 +9,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CartDTO {
-    
-    private ProductDTO products;
-    private int quantity;
+public class RatingDTO {
+    private int productId;
     private String username;
-    
+    private int point;
 }

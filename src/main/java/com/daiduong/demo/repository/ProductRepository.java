@@ -1,5 +1,7 @@
 package com.daiduong.demo.repository;
 
+import java.util.List;
+
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
 
@@ -20,4 +22,6 @@ public interface ProductRepository extends
     Page<ProductEntity> findByIsDeleted(boolean isDeleted, Pageable pageable);
     Page<ProductEntity> findByNameContainingAndIsDeleted(String name, boolean isDeleted, Pageable pageable);
     Page<ProductEntity> findByCategoryAndIsDeleted(CategoryEntity category, boolean isDeleted, Pageable pageable);
+
+    List<ProductEntity> findByCategoryAndIsDeleted(CategoryEntity category, boolean isDeleted);
 }

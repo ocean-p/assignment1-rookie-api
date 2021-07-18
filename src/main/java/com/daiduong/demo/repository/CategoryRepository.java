@@ -1,5 +1,7 @@
 package com.daiduong.demo.repository;
 
+import java.util.List;
+
 import com.daiduong.demo.entity.CategoryEntity;
 
 import org.springframework.data.domain.Page;
@@ -18,4 +20,6 @@ public interface CategoryRepository extends
 
     Page<CategoryEntity> findByIsDeleted(boolean isDeleted, Pageable pageable);
     Page<CategoryEntity> findByNameContainingAndIsDeleted(String name, boolean isDeleted, Pageable pageable);
+
+    List<CategoryEntity> findByIsDeletedOrderByCreateDateDesc(boolean isDeleted);
 }

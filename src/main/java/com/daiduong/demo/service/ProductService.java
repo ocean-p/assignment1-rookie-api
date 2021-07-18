@@ -167,33 +167,40 @@ public class ProductService implements IProductService {
         productEntity.setUpdateDate(LocalDate.now());
         productEntity = productRepository.save(productEntity);
 
+        CategoryEntity categoryEntity = productEntity.getCategory();
+        if(categoryEntity.isDeleted()){
+            categoryEntity.setDeleted(false);
+            categoryEntity.setUpdateDate(LocalDate.now());
+            categoryRepository.save(categoryEntity);
+        }
+
         return "Restore Successfully!";  
     }
 
     @Override
-    public ProductPagingDTO getAllProductsNoDelete(int pageNo) {
+    public ProductPagingDTO getAllProductsNoDelete(int pageNo, String valueSort) {
         if(pageNo < 1){
             throw new ApiRequestException("Page must be more than zero");
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
         
         return productPagingConvert.convert(pageNo, page);
     }
 
     @Override
-    public ProductPagingDTO getAllProductsDeleted(int pageNo) {
+    public ProductPagingDTO getAllProductsDeleted(int pageNo, String valueSort) {
         if(pageNo < 1){
             throw new ApiRequestException("Page must be more than zero");
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByIsDeleted(true, pageable);
         
         return productPagingConvert.convert(pageNo, page);
     }
 
     @Override
-    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo) {
+    public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo, String valueSort) {
         if(value == null || value.length() == 0){
             throw new ApiRequestException("ERR: Value is empty");
         }
@@ -201,7 +208,7 @@ public class ProductService implements IProductService {
         if(pageNo < 1){
             throw new ApiRequestException("Page must be more than zero");
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByNameContainingAndIsDeleted(
                                                 value, false, pageable);
         return productPagingConvert.convert(pageNo, page);                                        
@@ -211,25 +218,30 @@ public class ProductService implements IProductService {
     public ProductDTO getProductById(int id) {
         ProductEntity productEntity = productRepository.findById(id)
                 .orElseThrow(() -> new ApiRequestException("The product not found"));
+        
+        if(productEntity.isDeleted()){
+            throw new ApiRequestException("The product was deleted");
+        }        
         return productConvert.toDTO(productEntity);        
     }
 
     @Override
-    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo) {
+    public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo, String valueSort) {
         CategoryEntity category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ApiRequestException("The category not found"));
+        if(category.isDeleted()){
+            throw new ApiRequestException("The category was deleted");
+        }        
         
         if(pageNo < 1){
             throw new ApiRequestException("Page must be more than zero");
         }
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("updateDate").descending());
+        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByCategoryAndIsDeleted(
                                     category, false, pageable);
         return productPagingConvert.convert(pageNo, page);
-    }
-
-    
+    }    
 
     
 }

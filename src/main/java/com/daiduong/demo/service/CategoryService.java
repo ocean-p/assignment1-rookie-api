@@ -1,14 +1,17 @@
 package com.daiduong.demo.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import com.daiduong.demo.convert.CategoryConvert;
 import com.daiduong.demo.convert.CategoryPagingConvert;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.CategoryPagingDTO;
 import com.daiduong.demo.entity.CategoryEntity;
+import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.exception.ApiRequestException;
 import com.daiduong.demo.repository.CategoryRepository;
+import com.daiduong.demo.repository.ProductRepository;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,13 +32,18 @@ public class CategoryService implements ICategoryService{
 
     @Autowired
     private CategoryPagingConvert categoryPagingConvert;
+
+    @Autowired
+    private ProductRepository productRepository;
     
     @Override
     public CategoryDTO getCategoryById(int id){
         CategoryEntity entity = categoryRepository.findById(id).orElseThrow(
             () -> new ApiRequestException("Category not found")
         );
-
+        if(entity.isDeleted()){
+            throw new ApiRequestException("The category was deleted");
+        }
         return categoryConvert.toDTO(entity);
     }
 
@@ -103,6 +111,14 @@ public class CategoryService implements ICategoryService{
             throw new ApiRequestException("This category already deleted");
         }
 
+        List<ProductEntity> productEntityList = productRepository.findByCategoryAndIsDeleted(
+                                                categoryEntity, false);
+        for (ProductEntity productEntity : productEntityList) {
+            productEntity.setDeleted(true);
+            productEntity.setUpdateDate(LocalDate.now());
+            productRepository.save(productEntity);
+        }                                            
+
         categoryEntity.setDeleted(true);
         categoryEntity.setUpdateDate(LocalDate.now());
         categoryEntity = categoryRepository.save(categoryEntity);
@@ -165,6 +181,12 @@ public class CategoryService implements ICategoryService{
                                         value, false, pageable);
 
         return categoryPagingConvert.convert(pageNo, page);
+    }
+
+    @Override
+    public List<CategoryDTO> getCategoryMenu() {
+        List<CategoryEntity> list = categoryRepository.findByIsDeletedOrderByCreateDateDesc(false);
+        return categoryConvert.toDTOList(list);
     }
 
 }
