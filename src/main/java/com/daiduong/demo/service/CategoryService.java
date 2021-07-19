@@ -10,6 +10,7 @@ import com.daiduong.demo.dto.CategoryPagingDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.exception.ApiRequestException;
+import com.daiduong.demo.exception.ErrorCode;
 import com.daiduong.demo.repository.CategoryRepository;
 import com.daiduong.demo.repository.ProductRepository;
 import com.daiduong.demo.service.interfaces.ICategoryService;
@@ -28,6 +29,9 @@ public class CategoryService implements ICategoryService{
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private ErrorCode errorCode;
+
+    @Autowired
     private CategoryConvert categoryConvert;
 
     @Autowired
@@ -39,10 +43,10 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryDTO getCategoryById(int id){
         CategoryEntity entity = categoryRepository.findById(id).orElseThrow(
-            () -> new ApiRequestException("Category not found")
+            () -> new ApiRequestException(errorCode.getCATEGORY_NOT_FOUND())
         );
         if(entity.isDeleted()){
-            throw new ApiRequestException("The category was deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }
         return categoryConvert.toDTO(entity);
     }
@@ -51,7 +55,7 @@ public class CategoryService implements ICategoryService{
     public CategoryDTO addCategory(CategoryDTO category){
         String name = category.getName();
         if(name == null || name.length() == 0){
-            throw new ApiRequestException("Fail to add category - Name not null or empty");
+            throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
 
         CategoryEntity categoryEntity = categoryConvert.toEntity(category);
@@ -74,11 +78,11 @@ public class CategoryService implements ICategoryService{
     public CategoryDTO updateCategory(int id, CategoryDTO category) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
-                "The category with id:" + id + " does not exist"
+                errorCode.getCATEGORY_NOT_FOUND()
             ));
 
         if(categoryEntity.isDeleted()){
-            throw new ApiRequestException("The category was deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }
             
         String newName = category.getName();
@@ -86,12 +90,12 @@ public class CategoryService implements ICategoryService{
 
         if(newName == null || newName.length() == 0)
         {
-            throw new ApiRequestException("Name is empty");
+            throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }    
 
         if(newDes == null || newDes.length() == 0)
         {
-            throw new ApiRequestException("Description is empty");
+            throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
         
         categoryEntity.setName(newName);
@@ -105,10 +109,10 @@ public class CategoryService implements ICategoryService{
     public String deleteCategory(int id){
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
-                "The category not found"
+                errorCode.getCATEGORY_NOT_FOUND()
             ));
         if(categoryEntity.isDeleted()){
-            throw new ApiRequestException("This category already deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }
 
         List<ProductEntity> productEntityList = productRepository.findByCategoryAndIsDeleted(
@@ -130,10 +134,10 @@ public class CategoryService implements ICategoryService{
     public String restoreCategory(int id) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
-                "The category not found"
+                errorCode.getCATEGORY_NOT_FOUND()
             ));
         if(categoryEntity.isDeleted() == false){
-            throw new ApiRequestException("This category already active");
+            throw new ApiRequestException(errorCode.getCATEGORY_ACTIVE());
         }
 
         categoryEntity.setDeleted(false);
@@ -146,7 +150,7 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryPagingDTO getAllCategoriesNoDelete(int pageNo) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -158,7 +162,7 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryPagingDTO getAllCategoriesDeleted(int pageNo) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -170,11 +174,11 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryPagingDTO searchCategoryNoDeleted(String value, int pageNo) {
         if(value == null || value.length() == 0){
-            throw new ApiRequestException("Value is empty");
+            throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
 
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
         Page<CategoryEntity> page = categoryRepository.findByNameContainingAndIsDeleted(

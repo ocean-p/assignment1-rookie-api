@@ -8,6 +8,7 @@ import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.entity.RatingEntity;
 import com.daiduong.demo.exception.ApiRequestException;
+import com.daiduong.demo.exception.ErrorCode;
 import com.daiduong.demo.repository.AccountRepository;
 import com.daiduong.demo.repository.ProductRepository;
 import com.daiduong.demo.repository.RatingRepository;
@@ -28,6 +29,9 @@ public class RatingService implements IRatingService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private ErrorCode errorCode;
+
     @Override
     public String ratingProudct(RatingDTO ratingDTO) {
         int productId = ratingDTO.getProductId();
@@ -35,26 +39,26 @@ public class RatingService implements IRatingService {
         int point = ratingDTO.getPoint();
 
         ProductEntity productEntity = productRepository.findById(productId).orElseThrow(
-            () -> new ApiRequestException("Product not found")
+            () -> new ApiRequestException(errorCode.getPRODUCT_NOT_FOUND())
         );
         if(productEntity.isDeleted()){
-            throw new ApiRequestException("Product was deleted");
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }
 
         AccountEntity accountEntity = accountRepository.findById(accountUsername).orElseThrow(
-            () -> new ApiRequestException("Account not found")
+            () -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND())
         );
         if(accountEntity.isDeleted()){
-            throw new ApiRequestException("Account was disable");
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
 
         if(String.valueOf(point) == null || point < 0 || point > 10){
-            throw new ApiRequestException("Point - Max:10, Min:0");
+            throw new ApiRequestException(errorCode.getPOINT_NOT_CORRECT());
         }
 
         Optional<RatingEntity> optional = ratingRepository.findByProductAndAccount(productEntity, accountEntity);
         if(optional.isPresent()){
-            throw new ApiRequestException("You already rate this product");
+            throw new ApiRequestException(errorCode.getRATING_ALREADY());
         }
 
         RatingEntity ratingEntity = new RatingEntity();
@@ -94,17 +98,17 @@ public class RatingService implements IRatingService {
         String accountUsername = ratingDTO.getUsername();
 
         ProductEntity productEntity = productRepository.findById(productId).orElseThrow(
-            () -> new ApiRequestException("Product not found")
+            () -> new ApiRequestException(errorCode.getPRODUCT_NOT_FOUND())
         );
         if(productEntity.isDeleted()){
-            throw new ApiRequestException("Product was deleted");
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }
 
         AccountEntity accountEntity = accountRepository.findById(accountUsername).orElseThrow(
-            () -> new ApiRequestException("Account not found")
+            () -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND())
         );
         if(accountEntity.isDeleted()){
-            throw new ApiRequestException("Account was disable");
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
 
         Optional<RatingEntity> optional = ratingRepository.findByProductAndAccount(productEntity, accountEntity);

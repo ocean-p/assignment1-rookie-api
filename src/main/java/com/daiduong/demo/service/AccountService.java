@@ -9,6 +9,7 @@ import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.entity.AccountEntity;
 import com.daiduong.demo.exception.ApiRequestException;
+import com.daiduong.demo.exception.ErrorCode;
 import com.daiduong.demo.repository.AccountRepository;
 import com.daiduong.demo.service.interfaces.IAccountService;
 
@@ -29,6 +30,9 @@ public class AccountService implements IAccountService{
     private AccountRepository accountRepository;
 
     @Autowired
+    private ErrorCode errorCode;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -47,36 +51,36 @@ public class AccountService implements IAccountService{
         String role = account.getRole();
 
         if(username == null || username.trim().length() == 0){
-            throw new ApiRequestException("Username must not be null or empty");
+            throw new ApiRequestException(errorCode.getUSERNAME_IS_EMPTY());
         }
 
         Optional<AccountEntity> optional = accountRepository.findById(username);
         if(optional.isPresent()){
-            throw new ApiRequestException("Username already used");
+            throw new ApiRequestException(errorCode.getUSERNAME_ALREADY_TAKEN());
         }
 
         if(password == null || password.trim().length() < 6 || password.trim().length() > 20){
-            throw new ApiRequestException("Password's length must be between 6 and 20");
+            throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
         }
 
         if(fullName == null || fullName.trim().length() == 0){
-            throw new ApiRequestException("Full name must not be null or empty");
+            throw new ApiRequestException(errorCode.getFULLNAME_IS_EMPTY());
         }
 
         if(phone == null || phone.trim().length() < 10 
             || phone.trim().length() > 11 || !phone.matches("^[0-9]+$"))
         {
-            throw new ApiRequestException("Phone must be number and length 10 or 11");
+            throw new ApiRequestException(errorCode.getPHONE_NOT_CORRECT_FORMAT());
         }
 
         if(address == null || address.trim().length() == 0){
-            throw new ApiRequestException("Address must not be null or empty");
+            throw new ApiRequestException(errorCode.getADDRESS_IS_EMPTY());
         }
 
         if(role == null || 
             (!role.trim().equalsIgnoreCase("admin") && !role.trim().equalsIgnoreCase("customer")))
         {
-            throw new ApiRequestException("Role must be admin or customer");
+            throw new ApiRequestException(errorCode.getROLE_NOT_CORRECT());
         }
         
         AccountEntity accountEntity = accountConvert.toEntity(account);
@@ -98,14 +102,14 @@ public class AccountService implements IAccountService{
 
         AccountEntity oldAccount = accountRepository.findById(username)
                                    .orElseThrow(() -> new ApiRequestException(
-                                       "Username not found"
+                                       errorCode.getACCOUNT_NOT_FOUND()
                                     ));
         if(!oldAccount.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
-            throw new ApiRequestException("This username isn't of Customer account");
+            throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
 
         if(oldAccount.isDeleted()){
-            throw new ApiRequestException("This account was deleted");
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
 
         String newFullName = newAccount.getFullName();
@@ -118,27 +122,27 @@ public class AccountService implements IAccountService{
             || newPassword.trim().length() < 6 
             || newPassword.trim().length() > 20)
         {
-            throw new ApiRequestException("Password's length must be between 6 and 20");
+            throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
         }
 
         if(newFullName == null || newFullName.trim().length() == 0){
-            throw new ApiRequestException("Full name must not be null or empty");
+            throw new ApiRequestException(errorCode.getFULLNAME_IS_EMPTY());
         }
 
         if(newPhone == null || newPhone.trim().length() < 10 
             || newPhone.trim().length() > 11 || !newPhone.matches("^[0-9]+$"))
         {
-            throw new ApiRequestException("Phone must be number and length 10 or 11");
+            throw new ApiRequestException(errorCode.getPHONE_NOT_CORRECT_FORMAT());
         }
 
         if(newAddress == null || newAddress.trim().length() == 0){
-            throw new ApiRequestException("Address must not be null or empty");
+            throw new ApiRequestException(errorCode.getADDRESS_IS_EMPTY());
         }
 
         if(newRole == null || newRole.trim().length() == 0 
             || (!newRole.equalsIgnoreCase("CUSTOMER") && !newRole.equalsIgnoreCase("ADMIN")))
         {
-            throw new ApiRequestException("Role must be admin or customer");
+            throw new ApiRequestException(errorCode.getROLE_NOT_CORRECT());
         }    
 
         oldAccount.setFullName(newFullName);
@@ -155,14 +159,14 @@ public class AccountService implements IAccountService{
     public String deleteCustomerAccountByAdmin(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
-                                    "Username not found"
+                                    errorCode.getACCOUNT_NOT_FOUND()
                                 ));
         if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
-            throw new ApiRequestException("This username isn't of Customer account");
+            throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
 
         if(account.isDeleted() == true){
-            throw new ApiRequestException("This account already deleted");
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
 
         account.setDeleted(true);
@@ -175,14 +179,14 @@ public class AccountService implements IAccountService{
     public String restoreCustomerAccount(String username){
         AccountEntity account = accountRepository.findById(username)
                                 .orElseThrow(() -> new ApiRequestException(
-                                    "Username not found"
+                                    errorCode.getACCOUNT_NOT_FOUND()
                                 ));
         if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
-            throw new ApiRequestException("This username isn't of Customer account");
+            throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
         
         if(account.isDeleted() == false){
-            throw new ApiRequestException("This account already active");
+            throw new ApiRequestException(errorCode.getACCOUNT_ACTIVE());
         }
 
         account.setDeleted(false);
@@ -202,7 +206,7 @@ public class AccountService implements IAccountService{
     @Override
     public ListAccountPagingDTO getAllCustomerAccountsNoDelete(int pageNo) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -215,7 +219,7 @@ public class AccountService implements IAccountService{
     @Override
     public ListAccountPagingDTO getAllAdminAccountsNoDelete(int pageNo) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -228,10 +232,10 @@ public class AccountService implements IAccountService{
     @Override
     public ListAccountPagingDTO getCustomerAccountsNoDeleteBySearch(String value, int pageNo) {
         if(value == null || value.trim().length() == 0){
-            throw new ApiRequestException("Value search is empty");
+            throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -245,7 +249,7 @@ public class AccountService implements IAccountService{
     @Override
     public ListAccountPagingDTO getAllAccountsDeleted(int pageNo) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
 
         Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
@@ -260,7 +264,7 @@ public class AccountService implements IAccountService{
     public AccountDTO getAccountByUserName(String username) {
         AccountEntity accountEntity = accountRepository.findById(username)
                             .orElseThrow(() -> new ApiRequestException(
-                                "Username not found"));
+                                errorCode.getACCOUNT_NOT_FOUND()));
         AccountDTO result = accountConvert.toDTO(accountEntity);
         return result;                        
     }

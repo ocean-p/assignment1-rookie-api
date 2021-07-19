@@ -7,12 +7,12 @@ import com.daiduong.demo.dto.HomePageCustomerDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.dto.ProductPagingDTO;
 import com.daiduong.demo.dto.RatingDTO;
-import com.daiduong.demo.payload.response.MessageResponse;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
 import com.daiduong.demo.service.interfaces.IRatingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,52 +37,60 @@ public class CustomerController {
 
     @GetMapping("/product")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ProductPagingDTO getNoDeletedProducts(@RequestParam int page) {
-        return productService.getAllProductsNoDelete(page, "createDate");
+    public ResponseEntity<ProductPagingDTO> getNoDeletedProducts(@RequestParam int page) {
+        ProductPagingDTO result = productService.getAllProductsNoDelete(page, "createDate");
+        return ResponseEntity.ok(result);
     }
     
     @GetMapping("/product/search")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ProductPagingDTO searchProducts(@RequestParam String name, @RequestParam int page){
-        return productService.searchProductNoDeleteByName(name, page, "createDate");
+    public ResponseEntity<ProductPagingDTO> searchProducts(@RequestParam String name, @RequestParam int page){
+        ProductPagingDTO result = productService.searchProductNoDeleteByName(name, page, "createDate");
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/product/category")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ProductPagingDTO getProductsByCategory(@RequestParam int id, @RequestParam int page){
-        return productService.getProductNoDeleteByCategory(id, page, "createDate");
+    public ResponseEntity<ProductPagingDTO> getProductsByCategory(@RequestParam int id, @RequestParam int page){
+        ProductPagingDTO result = productService.getProductNoDeleteByCategory(id, page, "createDate");
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/product/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ProductDTO getProductById(@PathVariable("id") int id){
-        return productService.getProductById(id);
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") int id){
+        ProductDTO result = productService.getProductById(id);
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/category")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public List<CategoryDTO> getCategoryMenu(){
-        return categoryService.getCategoryMenu();
+    public ResponseEntity<List<CategoryDTO>> getCategoryMenu(){
+        List<CategoryDTO> result = categoryService.getCategoryMenu();
+        return ResponseEntity.ok(result);
     }
 
     @GetMapping("/home")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public HomePageCustomerDTO getHomePage(@RequestParam int page){
+    public ResponseEntity<HomePageCustomerDTO> getHomePage(@RequestParam int page){
         List<CategoryDTO> categoryList = categoryService.getCategoryMenu();
         ProductPagingDTO productPaging = productService.getAllProductsNoDelete(page, "createDate");
 
-        return new HomePageCustomerDTO(categoryList, productPaging);
+        HomePageCustomerDTO result = new HomePageCustomerDTO(categoryList, productPaging);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/product/rating")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public MessageResponse ratingProduct(@RequestBody RatingDTO ratingDTO){
-        return new MessageResponse(ratingService.ratingProudct(ratingDTO));
+    public ResponseEntity<String> ratingProduct(@RequestBody RatingDTO ratingDTO){
+        String message = ratingService.ratingProudct(ratingDTO);
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("/product/rating/point")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public MessageResponse ratingProductView(@RequestBody RatingDTO ratingDTO){
-        return new MessageResponse(ratingService.viewPoint(ratingDTO));
+    public ResponseEntity<String> ratingProductView(@RequestBody RatingDTO ratingDTO){
+        String message = ratingService.viewPoint(ratingDTO);
+        return ResponseEntity.ok(message);
     }
 }

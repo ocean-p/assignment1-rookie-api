@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -18,7 +19,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "product")
+@Table(name = "product",
+    indexes = {
+        @Index(name = "product_id_index", columnList = "product_id"),
+        @Index(name = "product_name_index", columnList = "name")
+    }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

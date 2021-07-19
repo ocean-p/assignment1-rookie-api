@@ -10,6 +10,7 @@ import com.daiduong.demo.dto.ProductPagingDTO;
 import com.daiduong.demo.entity.CategoryEntity;
 import com.daiduong.demo.entity.ProductEntity;
 import com.daiduong.demo.exception.ApiRequestException;
+import com.daiduong.demo.exception.ErrorCode;
 import com.daiduong.demo.repository.CategoryRepository;
 import com.daiduong.demo.repository.ProductRepository;
 import com.daiduong.demo.service.interfaces.IProductService;
@@ -31,6 +32,9 @@ public class ProductService implements IProductService {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private ErrorCode errorCode;
+
+    @Autowired
     private ProductConvert productConvert;
 
     @Autowired
@@ -45,26 +49,26 @@ public class ProductService implements IProductService {
         String img = product.getImage();
 
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ApiRequestException("The category " + categoryId + " not found"));
+            .orElseThrow(() -> new ApiRequestException(errorCode.getCATEGORY_NOT_FOUND()));
         
         if(categoryEntity.isDeleted()){
-            throw new ApiRequestException("The category was deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }            
 
         if(name == null || name.length() == 0){
-            throw new ApiRequestException("ERR: Name is empty");
+            throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
 
         if(img == null || img.length() == 0){
-            throw new ApiRequestException("ERR: ImageUrl is empty");
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
 
         if(String.valueOf(price) == null || price <= 0){
-            throw new ApiRequestException("ERR: Price < 0");
+            throw new ApiRequestException(errorCode.getPRICE_LESS_THAN_ZERO());
         }
 
         if(String.valueOf(quantity) == null || quantity <= 0){
-            throw new ApiRequestException("ERR: Quantity < 0");
+            throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
 
         ProductEntity productEntity = productConvert.toEntity(product);
@@ -89,18 +93,18 @@ public class ProductService implements IProductService {
     public ProductDTO updateProduct(int id, ProductDTO product) {
         ProductEntity productEntity = productRepository.findById(id)
             .orElseThrow(() -> new ApiRequestException(
-                    "The product " + id + " not found"));
+                    errorCode.getPRODUCT_NOT_FOUND()));
         
         if(productEntity.isDeleted()){
-            throw new ApiRequestException("The product was deleted");
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }            
 
         int newCategoryId = product.getCategoryId();
         CategoryEntity categoryEntity = categoryRepository.findById(newCategoryId)
-                .orElseThrow(() -> new ApiRequestException("The category not found"));
+                .orElseThrow(() -> new ApiRequestException(errorCode.getCATEGORY_NOT_FOUND()));
 
         if(categoryEntity.isDeleted()){
-            throw new ApiRequestException("The category was deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }        
 
         String newName = product.getName();
@@ -110,19 +114,19 @@ public class ProductService implements IProductService {
         int newQuantity = product.getQuantity();
 
         if(newName == null || newName.length() == 0){
-            throw new ApiRequestException("ERR: Name is empty");
+            throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
         if(newImg == null || newImg.length() == 0){
-            throw new ApiRequestException("ERR: ImageURL is empty");
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
         if(newDes == null || newDes.length() == 0){
-            throw new ApiRequestException("ERR: Description is empty");
+            throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
         if(String.valueOf(newPrice) == null || newPrice <= 0){
-            throw new ApiRequestException("ERR: Price < 0");
+            throw new ApiRequestException(errorCode.getPRICE_LESS_THAN_ZERO());
         }
         if(String.valueOf(newQuantity) == null || newQuantity <= 0){
-            throw new ApiRequestException("ERR: Quantity < 0");
+            throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
         
         productEntity.setName(newName);
@@ -140,10 +144,10 @@ public class ProductService implements IProductService {
     public String deleteProduct(int id){
         ProductEntity productEntity = productRepository.findById(id)
                     .orElseThrow(() -> new ApiRequestException(
-                        "The product " + id + " not found"
+                        errorCode.getPRODUCT_NOT_FOUND()
                     ));
         if(productEntity.isDeleted()){
-            throw new ApiRequestException("The product already deleted");
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }
         
         productEntity.setDeleted(true);
@@ -157,10 +161,10 @@ public class ProductService implements IProductService {
     public String restoreProduct(int id) {
         ProductEntity productEntity = productRepository.findById(id)
                     .orElseThrow(() -> new ApiRequestException(
-                        "The product " + id + " not found"
+                        errorCode.getPRODUCT_NOT_FOUND()
                     ));
         if(productEntity.isDeleted() == false){
-            throw new ApiRequestException("The product already active");
+            throw new ApiRequestException(errorCode.getPRODUCT_ACTIVE());
         }
         
         productEntity.setDeleted(false);
@@ -180,7 +184,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductPagingDTO getAllProductsNoDelete(int pageNo, String valueSort) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
@@ -191,7 +195,7 @@ public class ProductService implements IProductService {
     @Override
     public ProductPagingDTO getAllProductsDeleted(int pageNo, String valueSort) {
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByIsDeleted(true, pageable);
@@ -202,11 +206,11 @@ public class ProductService implements IProductService {
     @Override
     public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo, String valueSort) {
         if(value == null || value.length() == 0){
-            throw new ApiRequestException("ERR: Value is empty");
+            throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
         
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
         Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
         Page<ProductEntity> page = productRepository.findByNameContainingAndIsDeleted(
@@ -217,10 +221,10 @@ public class ProductService implements IProductService {
     @Override
     public ProductDTO getProductById(int id) {
         ProductEntity productEntity = productRepository.findById(id)
-                .orElseThrow(() -> new ApiRequestException("The product not found"));
+                .orElseThrow(() -> new ApiRequestException(errorCode.getPRODUCT_NOT_FOUND()));
         
         if(productEntity.isDeleted()){
-            throw new ApiRequestException("The product was deleted");
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }        
         return productConvert.toDTO(productEntity);        
     }
@@ -228,13 +232,13 @@ public class ProductService implements IProductService {
     @Override
     public ProductPagingDTO getProductNoDeleteByCategory(int categoryId, int pageNo, String valueSort) {
         CategoryEntity category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ApiRequestException("The category not found"));
+                .orElseThrow(() -> new ApiRequestException(errorCode.getCATEGORY_NOT_FOUND()));
         if(category.isDeleted()){
-            throw new ApiRequestException("The category was deleted");
+            throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }        
         
         if(pageNo < 1){
-            throw new ApiRequestException("Page must be more than zero");
+            throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
 
         Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());

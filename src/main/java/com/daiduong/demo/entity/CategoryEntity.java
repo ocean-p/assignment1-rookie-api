@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -16,7 +17,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "category")
+@Table(name = "category", 
+        indexes = {
+            @Index(name = "category_id_index", columnList = "category_id"),
+            @Index(name = "category_name_index", columnList = "name")
+        }        
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

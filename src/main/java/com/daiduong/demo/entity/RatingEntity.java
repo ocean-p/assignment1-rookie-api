@@ -3,6 +3,7 @@ package com.daiduong.demo.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -13,7 +14,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "rating")
+@Table(name = "rating",
+    indexes = {
+        @Index(name = "rating_id_index", columnList = "rate_id")
+    }
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter

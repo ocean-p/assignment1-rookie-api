@@ -9,6 +9,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -22,7 +23,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "account")
+@Table(name = "account", 
+       indexes = {@Index (name = "account_username_index", columnList = "username")}
+)
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
