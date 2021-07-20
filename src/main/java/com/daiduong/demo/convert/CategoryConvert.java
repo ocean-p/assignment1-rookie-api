@@ -1,7 +1,7 @@
 package com.daiduong.demo.convert;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.entity.CategoryEntity;
@@ -29,12 +29,10 @@ public class CategoryConvert {
         return dto;
     }
 
-    public List<CategoryDTO> toDTOList(List<CategoryEntity> categoryEntityList) {
-        List<CategoryDTO> dtoList = new ArrayList<>();
-        for (CategoryEntity categoryEntity : categoryEntityList) {
-            CategoryDTO categoryDTO = toDTO(categoryEntity);
-            dtoList.add(categoryDTO);
-        }
+    public List<CategoryDTO> toDTOList(List<CategoryEntity> entityList) {
+        List<CategoryDTO> dtoList = entityList.stream().map(entity -> toDTO(entity))
+                                    .collect(Collectors.toList());
+        
         return dtoList;
     }
 }

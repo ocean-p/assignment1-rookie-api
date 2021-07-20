@@ -1,7 +1,7 @@
 package com.daiduong.demo.convert;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.entity.ProductEntity;
@@ -38,11 +38,9 @@ public class ProductConvert {
     }
 
     public List<ProductDTO> toDTOList(List<ProductEntity> entityList) {
-        List<ProductDTO> dtoList = new ArrayList<>();
-        for (ProductEntity productEntity : entityList) {
-            ProductDTO dto = toDTO(productEntity);
-            dtoList.add(dto);
-        }
+        List<ProductDTO> dtoList = entityList.stream().map(entity -> toDTO(entity))
+                                   .collect(Collectors.toList());
+        
         return dtoList;
     }
 }

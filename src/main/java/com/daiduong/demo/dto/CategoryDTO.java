@@ -2,7 +2,7 @@ package com.daiduong.demo.dto;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.Setter;
 public class CategoryDTO {
     private int id;
 
-    @NotBlank
+    @NotNull
     private String name;
 
     private String description;

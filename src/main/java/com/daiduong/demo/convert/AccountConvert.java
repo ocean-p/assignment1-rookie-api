@@ -1,7 +1,7 @@
 package com.daiduong.demo.convert;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.entity.AccountEntity;
@@ -37,11 +37,9 @@ public class AccountConvert {
     }
 
     public List<AccountDTO> toDTOList(List<AccountEntity> entityList){
-        List<AccountDTO> dtoList = new ArrayList<>();
-        for (AccountEntity accountEntity : entityList) {
-            AccountDTO dto = toDTO(accountEntity);
-            dtoList.add(dto);
-        }
+        List<AccountDTO> dtoList = entityList.stream().map(entity -> toDTO(entity))
+                                    .collect(Collectors.toList());
+    
         return dtoList;
     }
 }

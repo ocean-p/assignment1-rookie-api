@@ -2,7 +2,7 @@ package com.daiduong.demo.dto;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,24 +14,24 @@ import lombok.Setter;
 @Getter
 @Setter
 public class AccountDTO {
-    @NotBlank
+    @NotNull
     private String username;
 
-    @NotBlank
+    @NotNull
     private String password;
 
-    @NotBlank
+    @NotNull
     private String fullName;
 
-    @NotBlank
+    @NotNull
     private String phone;
 
-    @NotBlank
+    @NotNull
     private String address;
     private LocalDate createDate;
     private LocalDate updateDate;
 
-    @NotBlank
+    @NotNull
     private String role;
     private boolean isDeleted;
 }

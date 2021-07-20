@@ -2,7 +2,7 @@ package com.daiduong.demo.dto;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,23 +16,23 @@ import lombok.Setter;
 public class ProductDTO {
     private int id;
 
-    @NotBlank
+    @NotNull
     private String name;
 
-    @NotBlank
+    @NotNull
     private float price;
 
-    @NotBlank
+    @NotNull
     private String image;
 
-    @NotBlank
+    @NotNull
     private int quantity;
     private String description;
     private int averageRate;
     private LocalDate createDate;
     private LocalDate updateDate;
 
-    @NotBlank
+    @NotNull
     private int categoryId;
     private boolean isDeleted;
 }
