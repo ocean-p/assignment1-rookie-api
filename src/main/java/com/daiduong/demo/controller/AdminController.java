@@ -1,5 +1,7 @@
 package com.daiduong.demo.controller;
 
+import java.util.List;
+
 import com.daiduong.demo.dto.AccountDTO;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.CategoryPagingDTO;
@@ -13,6 +15,7 @@ import com.daiduong.demo.service.interfaces.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -93,6 +97,13 @@ public class AdminController {
                                                                      @RequestParam  int page)
     {
         CategoryPagingDTO result = categoryService.searchCategoryNoDeleted(value, page);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/category/list")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<CategoryDTO>> getCategoryMenu(){
+        List<CategoryDTO> result = categoryService.getCategoryMenu();
         return ResponseEntity.ok(result);
     }
     /** END: CATEGORY */

@@ -192,5 +192,5 @@ public class CategoryService implements ICategoryService{
         List<CategoryEntity> list = categoryRepository.findByIsDeletedOrderByCreateDateDesc(false);
         return categoryConvert.toDTOList(list);
     }
-
+    
 }
