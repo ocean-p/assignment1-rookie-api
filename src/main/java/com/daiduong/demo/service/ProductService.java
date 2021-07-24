@@ -63,11 +63,15 @@ public class ProductService implements IProductService {
             throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
 
-        if(String.valueOf(price) == null || price <= 0){
+        if(String.valueOf(price) == null || !String.valueOf(price).matches("^[0-9]+(\\.[0-9]+){0,1}$") 
+            || price <= 0)
+        {
             throw new ApiRequestException(errorCode.getPRICE_LESS_THAN_ZERO());
         }
 
-        if(String.valueOf(quantity) == null || quantity <= 0){
+        if(String.valueOf(quantity) == null || !String.valueOf(quantity).matches("^[0-9]+$")
+            || quantity <= 0)
+        {
             throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
 
@@ -122,10 +126,16 @@ public class ProductService implements IProductService {
         if(newDes == null || newDes.length() == 0){
             throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
-        if(String.valueOf(newPrice) == null || newPrice <= 0){
+        if(String.valueOf(newPrice) == null 
+            || !String.valueOf(newPrice).matches("^[0-9]+(\\.[0-9]+){0,1}$")  
+            || newPrice <= 0)
+        {
             throw new ApiRequestException(errorCode.getPRICE_LESS_THAN_ZERO());
         }
-        if(String.valueOf(newQuantity) == null || newQuantity <= 0){
+        if(String.valueOf(newQuantity) == null 
+            || !String.valueOf(newQuantity).matches("^[0-9]+$")
+            || newQuantity <= 0)
+        {
             throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
         

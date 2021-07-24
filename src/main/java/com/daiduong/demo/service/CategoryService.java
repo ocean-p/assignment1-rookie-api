@@ -54,13 +54,8 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryDTO addCategory(CategoryDTO category){
         String name = category.getName();
-        String description = category.getDescription();
         if(name == null || name.length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
-        }
-
-        if(description == null || description.length() == 0){
-            throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
 
         CategoryEntity categoryEntity = categoryConvert.toEntity(category);
