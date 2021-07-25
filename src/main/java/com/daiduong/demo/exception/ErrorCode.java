@@ -59,4 +59,6 @@ public class ErrorCode {
     private final String POINT_NOT_CORRECT = "POINT_NOT_CORRECT";
 
     private final String RATING_ALREADY = "RATING_ALREADY";
+
+    private final String RATING_NOT_FOUND = "RATING_NOT_FOUND";
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -89,10 +90,17 @@ public class CustomerController {
         return ResponseEntity.ok(message);
     }
 
+    @PutMapping("/product/rating")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> updateRating(@RequestBody RatingDTO ratingDTO){
+        String message = ratingService.updateRating(ratingDTO);
+        return ResponseEntity.ok(message);
+    }
+
     @PostMapping("/product/rating/point")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<String> ratingProductView(@RequestBody RatingDTO ratingDTO){
-        String message = ratingService.viewPoint(ratingDTO);
-        return ResponseEntity.ok(message);
+    public ResponseEntity<Integer> ratingProductView(@RequestBody RatingDTO ratingDTO){
+        int point = ratingService.viewPoint(ratingDTO);
+        return ResponseEntity.ok(point);
     }
 }

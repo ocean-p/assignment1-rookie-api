@@ -6,5 +6,7 @@ public interface IRatingService {
     
     public String ratingProudct(RatingDTO ratingDTO);
 
-    public String viewPoint(RatingDTO ratingDTO);
+    public Integer viewPoint(RatingDTO ratingDTO);
+
+    public String updateRating(RatingDTO ratingDTO);
 }
