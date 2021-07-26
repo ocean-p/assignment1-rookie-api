@@ -2,11 +2,14 @@ package com.daiduong.demo.controller;
 
 import java.util.List;
 
+import com.daiduong.demo.dto.CartDTO;
+import com.daiduong.demo.dto.CartPagingDTO;
 import com.daiduong.demo.dto.CategoryDTO;
 import com.daiduong.demo.dto.HomePageCustomerDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.dto.ProductPagingDTO;
 import com.daiduong.demo.dto.RatingDTO;
+import com.daiduong.demo.service.interfaces.ICartService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
 import com.daiduong.demo.service.interfaces.IRatingService;
@@ -37,6 +40,9 @@ public class CustomerController {
 
     @Autowired
     private IRatingService ratingService;
+
+    @Autowired
+    private ICartService cartService;
 
     @GetMapping("/product")
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -102,5 +108,21 @@ public class CustomerController {
     public ResponseEntity<Integer> ratingProductView(@RequestBody RatingDTO ratingDTO){
         int point = ratingService.viewPoint(ratingDTO);
         return ResponseEntity.ok(point);
+    }
+
+    @PostMapping("/cart")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<CartPagingDTO> viewCart(@RequestParam int page, 
+                                                  @RequestBody CartDTO dto)
+    {
+        CartPagingDTO result = cartService.viewCart(page, "id", dto);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/cart/add")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> addToCart(@RequestBody CartDTO dto){
+        String message = cartService.addToCart(dto);
+        return ResponseEntity.ok(message);
     }
 }

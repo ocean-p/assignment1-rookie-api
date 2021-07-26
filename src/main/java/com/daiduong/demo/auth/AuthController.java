@@ -60,31 +60,38 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
 
-        if(signUpRequest.getUsername() == null || signUpRequest.getUsername().length() == 0) {
+        if(signUpRequest.getUsername() == null 
+            || signUpRequest.getUsername().trim().length() == 0
+            || !signUpRequest.getUsername().trim().matches("^[0-9A-Za-z]+$")) 
+        {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Username is null or empty!"));
+            .body(new MessageResponse("Error: Username is not correct format!"));
         }
 
-        if(signUpRequest.getPassword() == null || signUpRequest.getPassword().length() < 6) {
+        if(signUpRequest.getPassword() == null 
+            || !signUpRequest.getPassword().trim().matches("^[0-9A-Za-z]+$")
+            || signUpRequest.getPassword().trim().length() < 6
+            || signUpRequest.getPassword().trim().length() > 20) 
+        {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Password is null or short!"));
+            .body(new MessageResponse("Error: Password is not correct format!"));
         }
 
-        if(signUpRequest.getFullName() == null || signUpRequest.getFullName().length() == 0) {
+        if(signUpRequest.getFullName() == null || signUpRequest.getFullName().trim().length() == 0) {
             return ResponseEntity.badRequest()
             .body(new MessageResponse("Error: Fullname is null or empty!"));
         }
 
         if(signUpRequest.getPhone() == null 
-            || signUpRequest.getPhone().length() < 10
-            || signUpRequest.getPhone().length() > 11
-            || !signUpRequest.getPhone().matches("^[0-9]+$")) 
+            || signUpRequest.getPhone().trim().length() < 10
+            || signUpRequest.getPhone().trim().length() > 11
+            || !signUpRequest.getPhone().trim().matches("^[0-9]+$")) 
         {
             return ResponseEntity.badRequest()
             .body(new MessageResponse("Error: Phone isn't correct format"));
         }
 
-        if(signUpRequest.getAddress() == null || signUpRequest.getAddress().length() == 0) {
+        if(signUpRequest.getAddress() == null || signUpRequest.getAddress().trim().length() == 0) {
             return ResponseEntity.badRequest()
             .body(new MessageResponse("Error: Address is null or empty!"));
         }

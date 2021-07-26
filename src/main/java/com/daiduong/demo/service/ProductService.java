@@ -55,11 +55,11 @@ public class ProductService implements IProductService {
             throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }            
 
-        if(name == null || name.length() == 0){
+        if(name == null || name.trim().length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
 
-        if(img == null || img.length() == 0){
+        if(img == null || img.trim().length() == 0){
             throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
 
@@ -117,13 +117,13 @@ public class ProductService implements IProductService {
         float newPrice = product.getPrice();
         int newQuantity = product.getQuantity();
 
-        if(newName == null || newName.length() == 0){
+        if(newName == null || newName.trim().length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
-        if(newImg == null || newImg.length() == 0){
+        if(newImg == null || newImg.trim().length() == 0){
             throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
-        if(newDes == null || newDes.length() == 0){
+        if(newDes == null || newDes.trim().length() == 0){
             throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
         if(String.valueOf(newPrice) == null 
@@ -215,7 +215,7 @@ public class ProductService implements IProductService {
 
     @Override
     public ProductPagingDTO searchProductNoDeleteByName(String value, int pageNo, String valueSort) {
-        if(value == null || value.length() == 0){
+        if(value == null || value.trim().length() == 0){
             throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
         

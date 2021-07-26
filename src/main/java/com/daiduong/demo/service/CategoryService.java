@@ -54,7 +54,7 @@ public class CategoryService implements ICategoryService{
     @Override
     public CategoryDTO addCategory(CategoryDTO category){
         String name = category.getName();
-        if(name == null || name.length() == 0){
+        if(name == null || name.trim().length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
 
@@ -88,12 +88,12 @@ public class CategoryService implements ICategoryService{
         String newName = category.getName();
         String newDes = category.getDescription();
 
-        if(newName == null || newName.length() == 0)
+        if(newName == null || newName.trim().length() == 0)
         {
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }    
 
-        if(newDes == null || newDes.length() == 0)
+        if(newDes == null || newDes.trim().length() == 0)
         {
             throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
@@ -173,7 +173,7 @@ public class CategoryService implements ICategoryService{
 
     @Override
     public CategoryPagingDTO searchCategoryNoDeleted(String value, int pageNo) {
-        if(value == null || value.length() == 0){
+        if(value == null || value.trim().length() == 0){
             throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
 

@@ -50,7 +50,10 @@ public class AccountService implements IAccountService{
         String address = account.getAddress();
         String role = account.getRole();
 
-        if(username == null || username.trim().length() == 0){
+        if(username == null 
+            || !username.trim().matches("^[0-9A-Za-z]+$")
+            || username.trim().length() == 0)
+        {
             throw new ApiRequestException(errorCode.getUSERNAME_IS_EMPTY());
         }
 
@@ -59,7 +62,10 @@ public class AccountService implements IAccountService{
             throw new ApiRequestException(errorCode.getUSERNAME_ALREADY_TAKEN());
         }
 
-        if(password == null || password.trim().length() < 6 || password.trim().length() > 20){
+        if(password == null 
+            || !password.trim().matches("^[0-9A-Za-z]+$")
+            || password.trim().length() < 6 
+            || password.trim().length() > 20){
             throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
         }
 
@@ -119,6 +125,7 @@ public class AccountService implements IAccountService{
         String newRole = newAccount.getRole();
 
         if(newPassword == null 
+            || !newPassword.trim().matches("^[0-9A-Za-z]+$")
             || newPassword.trim().length() < 6 
             || newPassword.trim().length() > 20)
         {
