@@ -54,7 +54,7 @@ public class AccountService implements IAccountService{
             || !username.trim().matches("^[0-9A-Za-z]+$")
             || username.trim().length() == 0)
         {
-            throw new ApiRequestException(errorCode.getUSERNAME_IS_EMPTY());
+            throw new ApiRequestException(errorCode.getUSERNAME_NOT_CORRECT_FORMAT());
         }
 
         Optional<AccountEntity> optional = accountRepository.findById(username);

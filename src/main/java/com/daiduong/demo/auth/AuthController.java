@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.daiduong.demo.entity.AccountEntity;
+import com.daiduong.demo.exception.ErrorCode;
 import com.daiduong.demo.payload.request.LoginRequest;
 import com.daiduong.demo.payload.request.SignupRequest;
 import com.daiduong.demo.payload.response.JwtResponse;
@@ -39,6 +40,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    ErrorCode errorCode;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
 
@@ -65,7 +69,7 @@ public class AuthController {
             || !signUpRequest.getUsername().trim().matches("^[0-9A-Za-z]+$")) 
         {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Username is not correct format!"));
+            .body(new MessageResponse(errorCode.getUSERNAME_NOT_CORRECT_FORMAT()));
         }
 
         if(signUpRequest.getPassword() == null 
@@ -74,12 +78,12 @@ public class AuthController {
             || signUpRequest.getPassword().trim().length() > 20) 
         {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Password is not correct format!"));
+            .body(new MessageResponse(errorCode.getPASSWORD_NOT_CORRECT_FORMAT()));
         }
 
         if(signUpRequest.getFullName() == null || signUpRequest.getFullName().trim().length() == 0) {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Fullname is null or empty!"));
+            .body(new MessageResponse(errorCode.getFULLNAME_IS_EMPTY()));
         }
 
         if(signUpRequest.getPhone() == null 
@@ -88,17 +92,17 @@ public class AuthController {
             || !signUpRequest.getPhone().trim().matches("^[0-9]+$")) 
         {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Phone isn't correct format"));
+            .body(new MessageResponse(errorCode.getPHONE_NOT_CORRECT_FORMAT()));
         }
 
         if(signUpRequest.getAddress() == null || signUpRequest.getAddress().trim().length() == 0) {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Address is null or empty!"));
+            .body(new MessageResponse(errorCode.getADDRESS_IS_EMPTY()));
         }
 
         if (accountRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity.badRequest()
-            .body(new MessageResponse("Error: Username is already taken!"));
+            .body(new MessageResponse(errorCode.getUSERNAME_ALREADY_TAKEN()));
         }
 
         LocalDate currentDate = LocalDate.now();

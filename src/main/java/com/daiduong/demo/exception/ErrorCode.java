@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public class ErrorCode {
     
-    private final String USERNAME_IS_EMPTY = "USERNAME_IS_EMPTY";
+    private final String USERNAME_NOT_CORRECT_FORMAT = "USERNAME_NOT_CORRECT_FORMAT";
 
     private final String USERNAME_ALREADY_TAKEN = "USERNAME_ALREADY_TAKEN";
 
