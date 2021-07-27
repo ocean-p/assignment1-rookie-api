@@ -61,4 +61,10 @@ public class ErrorCode {
     private final String RATING_ALREADY = "RATING_ALREADY";
 
     private final String RATING_NOT_FOUND = "RATING_NOT_FOUND";
+
+    private final String CART_NOT_FOUND = "CART_NOT_FOUND";
+
+    private final String NO_ITEM_IN_CART = "NO_ITEM_IN_CART";
+
+    private final String QUANTITY_GREATER_THAN_AVAILABLE = "QUANTITY_GREATER_THAN_AVAILABLE";
 }

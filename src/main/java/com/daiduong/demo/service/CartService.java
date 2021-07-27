@@ -3,6 +3,7 @@ package com.daiduong.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.daiduong.demo.convert.CartConvert;
 import com.daiduong.demo.convert.CartPagingConvert;
 import com.daiduong.demo.dto.CartDTO;
 import com.daiduong.demo.dto.CartPagingDTO;
@@ -40,6 +41,9 @@ public class CartService implements ICartService {
 
     @Autowired
     private CartPagingConvert cartPagingConvert;
+
+    @Autowired
+    private CartConvert cartConvert;
 
     @Override
     public CartPagingDTO viewCart(int pageNo, String valueSort, CartDTO cartDTO) {
@@ -87,7 +91,13 @@ public class CartService implements ICartService {
         Optional<CartEntity> cartOption = cartRepository.findByAccountAndProduct(accountEntity, productEntity);
         if(cartOption.isPresent()){
             CartEntity cartEntity = cartOption.get();
-            cartEntity.setQuantity(cartEntity.getQuantity() + 1);
+            int oldQuantity = cartEntity.getQuantity();
+
+            if(oldQuantity + 1 > productEntity.getQuantity()){
+                throw new ApiRequestException(errorCode.getQUANTITY_GREATER_THAN_AVAILABLE());
+            }
+
+            cartEntity.setQuantity(oldQuantity + 1);
             cartRepository.save(cartEntity);
         }
         else{
@@ -105,5 +115,95 @@ public class CartService implements ICartService {
         }
 
         return "Success to add product to cart";
+    }
+
+    @Override
+    public CartDTO getCartById(int id) {
+        CartEntity cartEntity = cartRepository.findById(id).orElseThrow(
+            () -> new ApiRequestException(errorCode.getCART_NOT_FOUND())
+        );
+        CartDTO cartDTO = cartConvert.toDTO(cartEntity);
+        return cartDTO;
+    }
+
+    @Override
+    public String deleteCartItem(CartDTO cartDTO) {
+        int cartId = cartDTO.getId();
+        String username = cartDTO.getUsername();
+        
+        Optional<CartEntity> cartOption = cartRepository.findById(cartId);
+        if(cartOption.isPresent() == false) {
+            throw new ApiRequestException(errorCode.getCART_NOT_FOUND());
+        }
+
+        AccountEntity accountEntity = accountRepository.findById(username)
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if(accountEntity.isDeleted()){
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
+        }
+        cartRepository.deleteById(cartId);
+        return "Delete cart item successfully!";
+    }
+
+    @Override
+    public String deleteAllCartItems(CartDTO cartDTO) {
+        String username = cartDTO.getUsername();
+        AccountEntity accountEntity = accountRepository.findById(username)
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if(accountEntity.isDeleted()){
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
+        }
+
+        List<CartEntity> cartEntityList = cartRepository.findByAccount(accountEntity);
+        if(cartEntityList.size() == 0){
+            throw new ApiRequestException(errorCode.getNO_ITEM_IN_CART());
+        }
+        
+        for (CartEntity cartEntity : cartEntityList) {
+            cartRepository.delete(cartEntity);
+        }
+
+        return "Success to delete all items in cart!";
+    }
+
+    @Override
+    public String updateQuantityInCart(CartDTO cartDTO) {
+        String username = cartDTO.getUsername();
+        int productId = cartDTO.getProduct().getId();
+        int quantity = cartDTO.getQuantity();
+
+        AccountEntity accountEntity = accountRepository.findById(username)
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if(accountEntity.isDeleted()){
+            throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
+        }
+
+        ProductEntity productEntity = productRepository.findById(productId)
+                .orElseThrow(() -> new ApiRequestException(errorCode.getPRODUCT_NOT_FOUND()));
+        if(productEntity.isDeleted()){
+            throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
+        }        
+
+        Optional<CartEntity> cartOption = cartRepository.findByAccountAndProduct(accountEntity, productEntity);
+        if(cartOption.isPresent() == false){
+            throw new ApiRequestException(errorCode.getCART_NOT_FOUND());
+        }
+
+        if(String.valueOf(quantity) == null 
+            || !String.valueOf(quantity).matches("^[0-9]+$")
+            || quantity <= 0)
+        {
+            throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
+        }
+        
+        int available = productEntity.getQuantity();
+        if(quantity > available){
+            throw new ApiRequestException(errorCode.getQUANTITY_GREATER_THAN_AVAILABLE());
+        }
+
+        CartEntity cartEntity = cartOption.get();
+        cartEntity.setQuantity(quantity);
+        cartRepository.save(cartEntity);
+        return "Success to update quantity in cart";
     }
 }

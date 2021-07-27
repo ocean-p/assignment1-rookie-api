@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -123,6 +124,34 @@ public class CustomerController {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<String> addToCart(@RequestBody CartDTO dto){
         String message = cartService.addToCart(dto);
+        return ResponseEntity.ok(message);
+    }
+
+    @GetMapping("/cart/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<CartDTO> getCartById(@PathVariable("id") int id){
+        CartDTO result = cartService.getCartById(id);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping("/cart")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> deleteCartItem(@RequestBody CartDTO cartDTO){
+        String message = cartService.deleteCartItem(cartDTO);
+        return ResponseEntity.ok(message);
+    }
+
+    @DeleteMapping("/cart/all")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> deleteAllCartItems(@RequestBody CartDTO cartDTO){
+        String message = cartService.deleteAllCartItems(cartDTO);
+        return ResponseEntity.ok(message);
+    }
+    
+    @PutMapping("/cart/update")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<String> updateQuantityInCart(@RequestBody CartDTO cartDTO){
+        String message = cartService.updateQuantityInCart(cartDTO);
         return ResponseEntity.ok(message);
     }
 }
