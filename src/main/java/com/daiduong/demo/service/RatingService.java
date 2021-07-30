@@ -57,41 +57,45 @@ public class RatingService implements IRatingService {
         {
             throw new ApiRequestException(errorCode.getPOINT_NOT_CORRECT());
         }
-
+        
         Optional<RatingEntity> optional = ratingRepository.findByProductAndAccount(productEntity, accountEntity);
         if(optional.isPresent()){
             throw new ApiRequestException(errorCode.getRATING_ALREADY());
         }
+        try{
+            RatingEntity ratingEntity = new RatingEntity();
+            if(ratingRepository.count() < 1){
+                ratingEntity.setRatingId(1);
+            }
+            else{
+                ratingEntity.setRatingId(ratingRepository.findMaxId() + 1);
+            }
+            ratingEntity.setProduct(productEntity);
+            ratingEntity.setAccount(accountEntity);
+            ratingEntity.setPoint(point);
+            ratingRepository.save(ratingEntity);
 
-        RatingEntity ratingEntity = new RatingEntity();
-        if(ratingRepository.count() < 1){
-            ratingEntity.setRatingId(1);
-        }
-        else{
-            ratingEntity.setRatingId(ratingRepository.findMaxId() + 1);
-        }
-        ratingEntity.setProduct(productEntity);
-        ratingEntity.setAccount(accountEntity);
-        ratingEntity.setPoint(point);
-        ratingRepository.save(ratingEntity);
+            int totalPoint = 0;
+            List<RatingEntity> ratingEntityList = ratingRepository.findByProduct(productEntity);
+            for (RatingEntity rating : ratingEntityList) {
+                totalPoint += rating.getPoint();
+            }
+            int averageRate;
+            if(ratingEntityList.size() == 0){
+                averageRate = 0;
+            }
+            else{
+                averageRate = totalPoint / ratingEntityList.size();
+            }
 
-        int totalPoint = 0;
-        List<RatingEntity> ratingEntityList = ratingRepository.findByProduct(productEntity);
-        for (RatingEntity rating : ratingEntityList) {
-            totalPoint += rating.getPoint();
-        }
-        int averageRate;
-        if(ratingEntityList.size() == 0){
-            averageRate = 0;
-        }
-        else{
-            averageRate = totalPoint / ratingEntityList.size();
-        }
+            productEntity.setAverageRate(averageRate);
+            productRepository.save(productEntity);
 
-        productEntity.setAverageRate(averageRate);
-        productRepository.save(productEntity);
-
-        return "Rating successfully!";
+            return "Rating successfully!";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRATING_ERR());
+        }
     }
 
     @Override
@@ -112,13 +116,17 @@ public class RatingService implements IRatingService {
         if(accountEntity.isDeleted()){
             throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
-
-        Optional<RatingEntity> optional = ratingRepository.findByProductAndAccount(productEntity, accountEntity);
-        if(optional.isPresent()){
-            return optional.get().getPoint();
+        try{
+            Optional<RatingEntity> optional = ratingRepository.findByProductAndAccount(productEntity, accountEntity);
+            if(optional.isPresent()){
+                return optional.get().getPoint();
+            }
+            else{
+                return -1;
+            }
         }
-        else{
-            return -1;
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRATING_ERR());
         }
     }
 
@@ -152,27 +160,32 @@ public class RatingService implements IRatingService {
         if(optional.isPresent() == false) {
             throw new ApiRequestException(errorCode.getRATING_NOT_FOUND());
         }
-        RatingEntity ratingEntity = optional.get();
-        ratingEntity.setPoint(point);
-        ratingRepository.save(ratingEntity);
+        try{
+            RatingEntity ratingEntity = optional.get();
+            ratingEntity.setPoint(point);
+            ratingRepository.save(ratingEntity);
 
-        int totalPoint = 0;
-        List<RatingEntity> ratingEntityList = ratingRepository.findByProduct(productEntity);
-        for (RatingEntity rating : ratingEntityList) {
-            totalPoint += rating.getPoint();
-        }
-        int averageRate;
-        if(ratingEntityList.size() == 0){
-            averageRate = 0;
-        }
-        else{
-            averageRate = totalPoint / ratingEntityList.size();
-        }
+            int totalPoint = 0;
+            List<RatingEntity> ratingEntityList = ratingRepository.findByProduct(productEntity);
+            for (RatingEntity rating : ratingEntityList) {
+                totalPoint += rating.getPoint();
+            }
+            int averageRate;
+            if(ratingEntityList.size() == 0){
+                averageRate = 0;
+            }
+            else{
+                averageRate = totalPoint / ratingEntityList.size();
+            }
 
-        productEntity.setAverageRate(averageRate);
-        productRepository.save(productEntity);
+            productEntity.setAverageRate(averageRate);
+            productRepository.save(productEntity);
 
-        return "Update Rating Successfully!";
+            return "Update Rating Successfully!";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRATING_ERR());
+        }
     }
     
 }

@@ -57,21 +57,25 @@ public class CategoryService implements ICategoryService{
         if(name == null || name.trim().length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
+        try{
+            CategoryEntity categoryEntity = categoryConvert.toEntity(category);
 
-        CategoryEntity categoryEntity = categoryConvert.toEntity(category);
-
-        if(categoryRepository.count() < 1){
-            categoryEntity.setId(1);
+            if(categoryRepository.count() < 1){
+                categoryEntity.setId(1);
+            }
+            else{
+                int maxId = categoryRepository.findMaxId();
+                categoryEntity.setId(maxId + 1);
+            }
+            LocalDate currentDate = LocalDate.now();
+            categoryEntity.setCreateDate(currentDate);
+            categoryEntity.setUpdateDate(currentDate);
+            categoryEntity = categoryRepository.save(categoryEntity);
+            return categoryConvert.toDTO(categoryEntity);
         }
-        else{
-            int maxId = categoryRepository.findMaxId();
-            categoryEntity.setId(maxId + 1);
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getADD_CATEGORY_ERR());
         }
-        LocalDate currentDate = LocalDate.now();
-        categoryEntity.setCreateDate(currentDate);
-        categoryEntity.setUpdateDate(currentDate);
-        categoryEntity = categoryRepository.save(categoryEntity);
-        return categoryConvert.toDTO(categoryEntity);
     }
 
     @Override
@@ -97,12 +101,16 @@ public class CategoryService implements ICategoryService{
         {
             throw new ApiRequestException(errorCode.getDESCRIPTION_IS_EMPTY());
         }
-        
-        categoryEntity.setName(newName);
-        categoryEntity.setDescription(newDes);
-        categoryEntity.setUpdateDate(LocalDate.now());
-        categoryEntity = categoryRepository.save(categoryEntity);
-        return categoryConvert.toDTO(categoryEntity);
+        try{
+            categoryEntity.setName(newName);
+            categoryEntity.setDescription(newDes);
+            categoryEntity.setUpdateDate(LocalDate.now());
+            categoryEntity = categoryRepository.save(categoryEntity);
+            return categoryConvert.toDTO(categoryEntity);
+        }
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getUPDATE_CATEGORY_ERR());
+        }
     }
 
     @Override
@@ -114,20 +122,24 @@ public class CategoryService implements ICategoryService{
         if(categoryEntity.isDeleted()){
             throw new ApiRequestException(errorCode.getCATEGORY_IS_DISABLED());
         }
+        try{
+            List<ProductEntity> productEntityList = productRepository.findByCategoryAndIsDeleted(
+                                                    categoryEntity, false);
+            for (ProductEntity productEntity : productEntityList) {
+                productEntity.setDeleted(true);
+                productEntity.setUpdateDate(LocalDate.now());
+                productRepository.save(productEntity);
+            }                                            
 
-        List<ProductEntity> productEntityList = productRepository.findByCategoryAndIsDeleted(
-                                                categoryEntity, false);
-        for (ProductEntity productEntity : productEntityList) {
-            productEntity.setDeleted(true);
-            productEntity.setUpdateDate(LocalDate.now());
-            productRepository.save(productEntity);
-        }                                            
+            categoryEntity.setDeleted(true);
+            categoryEntity.setUpdateDate(LocalDate.now());
+            categoryEntity = categoryRepository.save(categoryEntity);
 
-        categoryEntity.setDeleted(true);
-        categoryEntity.setUpdateDate(LocalDate.now());
-        categoryEntity = categoryRepository.save(categoryEntity);
-
-        return "Delete Successfully!";     
+            return "Delete Successfully!";
+        }
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getDELETE_CATEGORY_ERR());
+        }     
     }
 
     @Override
@@ -139,12 +151,16 @@ public class CategoryService implements ICategoryService{
         if(categoryEntity.isDeleted() == false){
             throw new ApiRequestException(errorCode.getCATEGORY_ACTIVE());
         }
+        try{
+            categoryEntity.setDeleted(false);
+            categoryEntity.setUpdateDate(LocalDate.now());
+            categoryEntity = categoryRepository.save(categoryEntity);
 
-        categoryEntity.setDeleted(false);
-        categoryEntity.setUpdateDate(LocalDate.now());
-        categoryEntity = categoryRepository.save(categoryEntity);
-
-        return "Restore Successfully!";
+            return "Restore Successfully!";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRESTORE_CATEGORY_ERR());
+        }
     }
 
     @Override
@@ -152,11 +168,15 @@ public class CategoryService implements ICategoryService{
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<CategoryEntity> page = categoryRepository.findByIsDeleted(false, pageable);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<CategoryEntity> page = categoryRepository.findByIsDeleted(false, pageable);
 
-        return categoryPagingConvert.convert(pageNo, page);
+            return categoryPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_CATEGORY_ERR());
+        }
     }
 
     @Override
@@ -164,11 +184,15 @@ public class CategoryService implements ICategoryService{
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<CategoryEntity> page = categoryRepository.findByIsDeleted(true, pageable);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<CategoryEntity> page = categoryRepository.findByIsDeleted(true, pageable);
 
-        return categoryPagingConvert.convert(pageNo, page);
+            return categoryPagingConvert.convert(pageNo, page);
+        }
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_CATEGORY_ERR());
+        }
     }
 
     @Override
@@ -180,17 +204,27 @@ public class CategoryService implements ICategoryService{
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<CategoryEntity> page = categoryRepository.findByNameContainingAndIsDeleted(
-                                        value, false, pageable);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<CategoryEntity> page = categoryRepository.findByNameContainingAndIsDeleted(
+                                            value, false, pageable);
 
-        return categoryPagingConvert.convert(pageNo, page);
+            return categoryPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getSEARCH_CATEGORY_ERR());
+        }
     }
 
     @Override
     public List<CategoryDTO> getCategoryMenu() {
-        List<CategoryEntity> list = categoryRepository.findByIsDeletedOrderByCreateDateDesc(false);
-        return categoryConvert.toDTOList(list);
+        try{
+            List<CategoryEntity> list = categoryRepository.findByIsDeletedOrderByCreateDateDesc(false);
+            return categoryConvert.toDTOList(list);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_CATEGORY_ERR());
+        }
     }
     
 }

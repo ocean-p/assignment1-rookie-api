@@ -74,23 +74,27 @@ public class ProductService implements IProductService {
         {
             throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
+        try{
+            ProductEntity productEntity = productConvert.toEntity(product);
 
-        ProductEntity productEntity = productConvert.toEntity(product);
-
-        if(productRepository.count() < 1){
-            productEntity.setId(1);
+            if(productRepository.count() < 1){
+                productEntity.setId(1);
+            }
+            else{
+                int maxId = productRepository.findMaxId();
+                productEntity.setId(maxId + 1);
+            }
+            productEntity.setAverageRate(0);
+            LocalDate currentDate = LocalDate.now();
+            productEntity.setCreateDate(currentDate);
+            productEntity.setUpdateDate(currentDate);
+            productEntity.setCategory(categoryEntity);
+            productEntity = productRepository.save(productEntity);
+            return productConvert.toDTO(productEntity);
         }
-        else{
-            int maxId = productRepository.findMaxId();
-            productEntity.setId(maxId + 1);
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getADD_PRODUCT_ERR());
         }
-        productEntity.setAverageRate(0);
-        LocalDate currentDate = LocalDate.now();
-        productEntity.setCreateDate(currentDate);
-        productEntity.setUpdateDate(currentDate);
-        productEntity.setCategory(categoryEntity);
-        productEntity = productRepository.save(productEntity);
-        return productConvert.toDTO(productEntity);
     }
 
     @Override
@@ -138,16 +142,20 @@ public class ProductService implements IProductService {
         {
             throw new ApiRequestException(errorCode.getQUANTITY_LESS_THAN_ZERO());
         }
-        
-        productEntity.setName(newName);
-        productEntity.setImage(newImg);
-        productEntity.setDescription(newDes);
-        productEntity.setPrice(newPrice);
-        productEntity.setQuantity(newQuantity);
-        productEntity.setCategory(categoryEntity);
-        productEntity.setUpdateDate(LocalDate.now());
-        productEntity = productRepository.save(productEntity);
-        return productConvert.toDTO(productEntity);
+        try{
+            productEntity.setName(newName);
+            productEntity.setImage(newImg);
+            productEntity.setDescription(newDes);
+            productEntity.setPrice(newPrice);
+            productEntity.setQuantity(newQuantity);
+            productEntity.setCategory(categoryEntity);
+            productEntity.setUpdateDate(LocalDate.now());
+            productEntity = productRepository.save(productEntity);
+            return productConvert.toDTO(productEntity);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getUPDATE_PRODUCT_ERR());
+        }
     }
 
     @Override
@@ -159,12 +167,16 @@ public class ProductService implements IProductService {
         if(productEntity.isDeleted()){
             throw new ApiRequestException(errorCode.getPRODUCT_IS_DISABLED());
         }
-        
-        productEntity.setDeleted(true);
-        productEntity.setUpdateDate(LocalDate.now());
-        productEntity = productRepository.save(productEntity);
+        try{
+            productEntity.setDeleted(true);
+            productEntity.setUpdateDate(LocalDate.now());
+            productEntity = productRepository.save(productEntity);
 
-        return "Delete Successfully!";         
+            return "Delete Successfully!";
+        }
+        catch(Exception e){
+            throw new ApiRequestException(errorCode.getDELETE_PRODUCT_ERR());
+        }         
     }
 
     @Override
@@ -176,19 +188,23 @@ public class ProductService implements IProductService {
         if(productEntity.isDeleted() == false){
             throw new ApiRequestException(errorCode.getPRODUCT_ACTIVE());
         }
-        
-        productEntity.setDeleted(false);
-        productEntity.setUpdateDate(LocalDate.now());
-        productEntity = productRepository.save(productEntity);
+        try{
+            productEntity.setDeleted(false);
+            productEntity.setUpdateDate(LocalDate.now());
+            productEntity = productRepository.save(productEntity);
 
-        CategoryEntity categoryEntity = productEntity.getCategory();
-        if(categoryEntity.isDeleted()){
-            categoryEntity.setDeleted(false);
-            categoryEntity.setUpdateDate(LocalDate.now());
-            categoryRepository.save(categoryEntity);
+            CategoryEntity categoryEntity = productEntity.getCategory();
+            if(categoryEntity.isDeleted()){
+                categoryEntity.setDeleted(false);
+                categoryEntity.setUpdateDate(LocalDate.now());
+                categoryRepository.save(categoryEntity);
+            }
+
+            return "Restore Successfully!";
         }
-
-        return "Restore Successfully!";  
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRESTORE_PRODUCT_ERR());
+        }  
     }
 
     @Override
@@ -196,10 +212,15 @@ public class ProductService implements IProductService {
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
-        Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
-        
-        return productPagingConvert.convert(pageNo, page);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
+            Page<ProductEntity> page = productRepository.findByIsDeleted(false, pageable);
+            
+            return productPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e){
+            throw new ApiRequestException(errorCode.getLOAD_PRODUCT_ERR());
+        }
     }
 
     @Override
@@ -207,10 +228,15 @@ public class ProductService implements IProductService {
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
-        Page<ProductEntity> page = productRepository.findByIsDeleted(true, pageable);
-        
-        return productPagingConvert.convert(pageNo, page);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
+            Page<ProductEntity> page = productRepository.findByIsDeleted(true, pageable);
+            
+            return productPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e){
+            throw new ApiRequestException(errorCode.getLOAD_PRODUCT_ERR());
+        }
     }
 
     @Override
@@ -222,10 +248,15 @@ public class ProductService implements IProductService {
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
-        Page<ProductEntity> page = productRepository.findByNameContainingAndIsDeleted(
-                                                value, false, pageable);
-        return productPagingConvert.convert(pageNo, page);                                        
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
+            Page<ProductEntity> page = productRepository.findByNameContainingAndIsDeleted(
+                                                    value, false, pageable);
+            return productPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getSEARCH_PRODUCT_ERR());
+        }                                        
     }
 
     @Override
@@ -250,11 +281,15 @@ public class ProductService implements IProductService {
         if(pageNo < 1){
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-
-        Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
-        Page<ProductEntity> page = productRepository.findByCategoryAndIsDeleted(
-                                    category, false, pageable);
-        return productPagingConvert.convert(pageNo, page);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by(valueSort).descending());
+            Page<ProductEntity> page = productRepository.findByCategoryAndIsDeleted(
+                                        category, false, pageable);
+            return productPagingConvert.convert(pageNo, page);
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_PRODUCT_ERR());
+        }
     }    
 
     

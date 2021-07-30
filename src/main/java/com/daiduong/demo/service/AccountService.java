@@ -24,8 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountService implements IAccountService{
-    
+public class AccountService implements IAccountService {
+
     @Autowired
     private AccountRepository accountRepository;
 
@@ -50,71 +50,63 @@ public class AccountService implements IAccountService{
         String address = account.getAddress();
         String role = account.getRole();
 
-        if(username == null 
-            || !username.trim().matches("^[0-9A-Za-z]+$")
-            || username.trim().length() == 0)
-        {
+        if (username == null || !username.trim().matches("^[0-9A-Za-z]+$") || username.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getUSERNAME_NOT_CORRECT_FORMAT());
         }
 
         Optional<AccountEntity> optional = accountRepository.findById(username);
-        if(optional.isPresent()){
+        if (optional.isPresent()) {
             throw new ApiRequestException(errorCode.getUSERNAME_ALREADY_TAKEN());
         }
 
-        if(password == null 
-            || !password.trim().matches("^[0-9A-Za-z]+$")
-            || password.trim().length() < 6 
-            || password.trim().length() > 20){
+        if (password == null || !password.trim().matches("^[0-9A-Za-z]+$") || password.trim().length() < 6
+                || password.trim().length() > 20) {
             throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
         }
 
-        if(fullName == null || fullName.trim().length() == 0){
+        if (fullName == null || fullName.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getFULLNAME_IS_EMPTY());
         }
 
-        if(phone == null || phone.trim().length() < 10 
-            || phone.trim().length() > 11 || !phone.matches("^[0-9]+$"))
-        {
+        if (phone == null || phone.trim().length() < 10 || phone.trim().length() > 11 || !phone.matches("^[0-9]+$")) {
             throw new ApiRequestException(errorCode.getPHONE_NOT_CORRECT_FORMAT());
         }
 
-        if(address == null || address.trim().length() == 0){
+        if (address == null || address.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getADDRESS_IS_EMPTY());
         }
 
-        if(role == null || 
-            (!role.trim().equalsIgnoreCase("admin") && !role.trim().equalsIgnoreCase("customer")))
-        {
+        if (role == null || (!role.trim().equalsIgnoreCase("admin") && !role.trim().equalsIgnoreCase("customer"))) {
             throw new ApiRequestException(errorCode.getROLE_NOT_CORRECT());
         }
-        
-        AccountEntity accountEntity = accountConvert.toEntity(account);
+        try {
+            AccountEntity accountEntity = accountConvert.toEntity(account);
 
-        String encodedPassword = passwordEncoder.encode(account.getPassword());
-        accountEntity.setPassword(encodedPassword);
+            String encodedPassword = passwordEncoder.encode(account.getPassword());
+            accountEntity.setPassword(encodedPassword);
 
-        LocalDate currentDate = LocalDate.now();
-        accountEntity.setCreateDate(currentDate);
-        accountEntity.setUpdateDate(currentDate);
-        accountEntity.setRole("ROLE_" + role.toUpperCase());
-        accountEntity = accountRepository.save(accountEntity);
-        return accountConvert.toDTO(accountEntity);
+            LocalDate currentDate = LocalDate.now();
+            accountEntity.setCreateDate(currentDate);
+            accountEntity.setUpdateDate(currentDate);
+            accountEntity.setRole("ROLE_" + role.toUpperCase());
+            accountEntity = accountRepository.save(accountEntity);
+            return accountConvert.toDTO(accountEntity);
+
+        } catch (Exception e) {
+            throw new ApiRequestException(errorCode.getADD_ACCOUNT_ERR());
+        }
     }
 
-
     @Override
-    public AccountDTO updateCustomerAccountByAdmin(String username, AccountDTO newAccount){
+    public AccountDTO updateCustomerAccountByAdmin(String username, AccountDTO newAccount) {
 
         AccountEntity oldAccount = accountRepository.findById(username)
-                                   .orElseThrow(() -> new ApiRequestException(
-                                       errorCode.getACCOUNT_NOT_FOUND()
-                                    ));
-        if(!oldAccount.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if (!oldAccount.getRole().equalsIgnoreCase("ROLE_CUSTOMER")) {
             throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
 
-        if(oldAccount.isDeleted()){
+        if (oldAccount.isDeleted()) {
             throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
 
@@ -124,156 +116,170 @@ public class AccountService implements IAccountService{
         String newPassword = newAccount.getPassword();
         String newRole = newAccount.getRole();
 
-        if(newPassword == null 
-            || !newPassword.trim().matches("^[0-9A-Za-z]+$")
-            || newPassword.trim().length() < 6 
-            || newPassword.trim().length() > 20)
-        {
+        if (newPassword == null || !newPassword.trim().matches("^[0-9A-Za-z]+$") || newPassword.trim().length() < 6
+                || newPassword.trim().length() > 20) {
             throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
         }
 
-        if(newFullName == null || newFullName.trim().length() == 0){
+        if (newFullName == null || newFullName.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getFULLNAME_IS_EMPTY());
         }
 
-        if(newPhone == null || newPhone.trim().length() < 10 
-            || newPhone.trim().length() > 11 || !newPhone.matches("^[0-9]+$"))
-        {
+        if (newPhone == null || newPhone.trim().length() < 10 || newPhone.trim().length() > 11
+                || !newPhone.matches("^[0-9]+$")) {
             throw new ApiRequestException(errorCode.getPHONE_NOT_CORRECT_FORMAT());
         }
 
-        if(newAddress == null || newAddress.trim().length() == 0){
+        if (newAddress == null || newAddress.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getADDRESS_IS_EMPTY());
         }
 
-        if(newRole == null || newRole.trim().length() == 0 
-            || (!newRole.equalsIgnoreCase("CUSTOMER") && !newRole.equalsIgnoreCase("ADMIN")))
-        {
+        if (newRole == null || newRole.trim().length() == 0
+                || (!newRole.equalsIgnoreCase("CUSTOMER") && !newRole.equalsIgnoreCase("ADMIN"))) {
             throw new ApiRequestException(errorCode.getROLE_NOT_CORRECT());
-        }    
-
-        oldAccount.setFullName(newFullName);
-        oldAccount.setPhone(newPhone);
-        oldAccount.setAddress(newAddress);
-        oldAccount.setPassword(passwordEncoder.encode(newPassword));
-        oldAccount.setRole("ROLE_" + newRole.toUpperCase());
-        oldAccount.setUpdateDate(LocalDate.now());
-        oldAccount = accountRepository.save(oldAccount);
-        return accountConvert.toDTO(oldAccount);
+        }
+        try {
+            oldAccount.setFullName(newFullName);
+            oldAccount.setPhone(newPhone);
+            oldAccount.setAddress(newAddress);
+            oldAccount.setPassword(passwordEncoder.encode(newPassword));
+            oldAccount.setRole("ROLE_" + newRole.toUpperCase());
+            oldAccount.setUpdateDate(LocalDate.now());
+            oldAccount = accountRepository.save(oldAccount);
+            return accountConvert.toDTO(oldAccount);
+        } catch (Exception e) {
+            throw new ApiRequestException(errorCode.getUPDATE_ACCOUNT_ERR());
+        }
     }
 
     @Override
-    public String deleteCustomerAccountByAdmin(String username){
+    public String deleteCustomerAccountByAdmin(String username) {
         AccountEntity account = accountRepository.findById(username)
-                                .orElseThrow(() -> new ApiRequestException(
-                                    errorCode.getACCOUNT_NOT_FOUND()
-                                ));
-        if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if (!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")) {
             throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
 
-        if(account.isDeleted() == true){
+        if (account.isDeleted() == true) {
             throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
-
-        account.setDeleted(true);
-        account.setUpdateDate(LocalDate.now());
-        account = accountRepository.save(account);
-        return "Delete Successfully!";
+        try{
+            account.setDeleted(true);
+            account.setUpdateDate(LocalDate.now());
+            account = accountRepository.save(account);
+            return "Delete Successfully!";
+        }
+        catch(Exception e){
+            throw new ApiRequestException(errorCode.getDELETE_ACCOUNT_ERR());
+        }
     }
 
     @Override
-    public String restoreCustomerAccount(String username){
+    public String restoreCustomerAccount(String username) {
         AccountEntity account = accountRepository.findById(username)
-                                .orElseThrow(() -> new ApiRequestException(
-                                    errorCode.getACCOUNT_NOT_FOUND()
-                                ));
-        if(!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")){
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
+        if (!account.getRole().equalsIgnoreCase("ROLE_CUSTOMER")) {
             throw new ApiRequestException(errorCode.getACCOUNT_NOT_BELONG_TO_CUSTOMER());
         }
-        
-        if(account.isDeleted() == false){
+
+        if (account.isDeleted() == false) {
             throw new ApiRequestException(errorCode.getACCOUNT_ACTIVE());
         }
-
-        account.setDeleted(false);
-        account.setUpdateDate(LocalDate.now());
-        account = accountRepository.save(account);
-        return "Restore Successfully!";
+        try{
+            account.setDeleted(false);
+            account.setUpdateDate(LocalDate.now());
+            account = accountRepository.save(account);
+            return "Restore Successfully!";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getRESTORE_ACCOUNT_ERR());
+        }
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return accountRepository.findById(username)
-            .orElseThrow(() -> new UsernameNotFoundException(
-                "Username not found"
-            )); 
+                .orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override
     public ListAccountPagingDTO getAllCustomerAccountsNoDelete(int pageNo) {
-        if(pageNo < 1){
+        if (pageNo < 1) {
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_CUSTOMER", false, pageable);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_CUSTOMER", false, pageable);
 
-        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
-        return result;
+            ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+            return result;
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_ACCOUNT_ERR());
+        }
     }
 
     @Override
     public ListAccountPagingDTO getAllAdminAccountsNoDelete(int pageNo) {
-        if(pageNo < 1){
+        if (pageNo < 1) {
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_ADMIN", false, pageable);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<AccountEntity> page = accountRepository.findByRoleAndIsDeleted("ROLE_ADMIN", false, pageable);
-
-        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
-        return result;
+            ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+            return result;
+        }
+        catch (Exception e){
+            throw new ApiRequestException(errorCode.getLOAD_ACCOUNT_ERR());
+        }
     }
 
     @Override
     public ListAccountPagingDTO getCustomerAccountsNoDeleteBySearch(String value, int pageNo) {
-        if(value == null || value.trim().length() == 0){
+        if (value == null || value.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getSEARCH_VALUE_IS_EMPTY());
         }
-        if(pageNo < 1){
+        if (pageNo < 1) {
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
-        
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<AccountEntity> page = accountRepository.findByUsernameContainingAndRoleAndIsDeleted(
-                                        value, "ROLE_CUSTOMER", false, pageable);
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<AccountEntity> page = accountRepository.findByUsernameContainingAndRoleAndIsDeleted(value, "ROLE_CUSTOMER",
+                    false, pageable);
 
-        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
-        return result;
+            ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+            return result;
+        }
+        catch (Exception e){
+            throw new ApiRequestException(errorCode.getSEARCH_ACCOUNT_ERR());
+        }
     }
 
     @Override
     public ListAccountPagingDTO getAllAccountsDeleted(int pageNo) {
-        if(pageNo < 1){
+        if (pageNo < 1) {
             throw new ApiRequestException(errorCode.getPAGE_LESS_THAN_ONE());
         }
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
+            Page<AccountEntity> page = accountRepository.findByIsDeleted(true, pageable);
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 5, Sort.by("updateDate").descending());
-        Page<AccountEntity> page = accountRepository.findByIsDeleted(true, pageable);
-
-        ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
-        return result;
+            ListAccountPagingDTO result = pagingConvert.convert(pageNo, page);
+            return result;
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getLOAD_ACCOUNT_ERR());
+        }
     }
-
 
     @Override
     public AccountDTO getAccountByUserName(String username) {
         AccountEntity accountEntity = accountRepository.findById(username)
-                            .orElseThrow(() -> new ApiRequestException(
-                                errorCode.getACCOUNT_NOT_FOUND()));
+                .orElseThrow(() -> new ApiRequestException(errorCode.getACCOUNT_NOT_FOUND()));
         AccountDTO result = accountConvert.toDTO(accountEntity);
-        return result;                        
+        return result;
     }
 
 }

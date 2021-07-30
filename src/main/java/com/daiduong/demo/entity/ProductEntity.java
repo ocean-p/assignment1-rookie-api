@@ -22,7 +22,8 @@ import lombok.Setter;
 @Table(name = "product",
     indexes = {
         @Index(name = "product_id_index", columnList = "product_id"),
-        @Index(name = "product_name_index", columnList = "name")
+        @Index(name = "product_name_index", columnList = "name"),
+        @Index(name = "product_category_index", columnList = "category_id")
     }
 )
 @NoArgsConstructor

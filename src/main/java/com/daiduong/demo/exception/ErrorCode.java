@@ -7,7 +7,46 @@ import lombok.Getter;
 @Component
 @Getter
 public class ErrorCode {
-    
+    private final String CART_ERR = "CART_ERR";
+
+    private final String RATING_ERR = "RATING_ERR";
+
+    private final String SEARCH_PRODUCT_ERR = "SEARCH_PRODUCT_ERR";
+
+    private final String LOAD_PRODUCT_ERR = "LOAD_PRODUCT_ERR";
+
+    private final String RESTORE_PRODUCT_ERR = "RESTORE_PRODUCT_ERR";
+
+    private final String DELETE_PRODUCT_ERR = "DELETE_PRODUCT_ERR";
+
+    private final String UPDATE_PRODUCT_ERR = "UPDATE_PRODUCT_ERR";
+
+    private final String ADD_PRODUCT_ERR = "ADD_PRODUCT_ERR";
+
+    private final String SEARCH_CATEGORY_ERR = "SEARCH_CATEGORY_ERR";
+
+    private final String LOAD_CATEGORY_ERR = "LOAD_CATEGORY_ERR";
+
+    private final String RESTORE_CATEGORY_ERR = "RESTORE_CATEGORY_ERR";
+
+    private final String DELETE_CATEGORY_ERR = "DELETE_CATEGORY_ERR";
+
+    private final String UPDATE_CATEGORY_ERR = "UPDATE_CATEGORY_ERR";
+
+    private final String ADD_CATEGORY_ERR = "ADD_CATEGORY_ERR";
+
+    private final String SEARCH_ACCOUNT_ERR = "SEARCH_ACCOUNT_ERR";
+
+    private final String LOAD_ACCOUNT_ERR = "LOAD_ACCOUNT_ERR";
+
+    private final String RESTORE_ACCOUNT_ERR = "RESTORE_ACCOUNT_ERR";
+
+    private final String DELETE_ACCOUNT_ERR = "DELETE_ACCOUNT_ERR";
+
+    private final String ADD_ACCOUNT_ERR = "ADD_ACCOUNT_ERR";
+
+    private final String UPDATE_ACCOUNT_ERR = "UPDATE_ACCOUNT_ERR";
+
     private final String USERNAME_NOT_CORRECT_FORMAT = "USERNAME_NOT_CORRECT_FORMAT";
 
     private final String USERNAME_ALREADY_TAKEN = "USERNAME_ALREADY_TAKEN";

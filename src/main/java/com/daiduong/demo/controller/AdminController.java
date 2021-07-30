@@ -8,6 +8,8 @@ import com.daiduong.demo.dto.CategoryPagingDTO;
 import com.daiduong.demo.dto.ListAccountPagingDTO;
 import com.daiduong.demo.dto.ProductDTO;
 import com.daiduong.demo.dto.ProductPagingDTO;
+import com.daiduong.demo.dto.ResponseDTO;
+import com.daiduong.demo.exception.SuccessCode;
 import com.daiduong.demo.service.interfaces.IAccountService;
 import com.daiduong.demo.service.interfaces.ICategoryService;
 import com.daiduong.demo.service.interfaces.IProductService;
@@ -39,6 +41,9 @@ public class AdminController {
 
     @Autowired
     private IAccountService accountService;
+
+    @Autowired
+    private SuccessCode successCode;
 
     /** BEGIN: CATEGORY */
     @GetMapping("/category/{id}")
@@ -182,69 +187,96 @@ public class AdminController {
     /** BEGIN: ACCOUNT */
     @PostMapping("/account")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccountDTO> addAccount(@RequestBody AccountDTO dto){
+    public ResponseEntity<ResponseDTO> addAccount(@RequestBody AccountDTO dto){
         AccountDTO result = accountService.addAccount(dto);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getADD_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/account/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccountDTO> getAccountByUsername(@PathVariable("username") String username){
+    public ResponseEntity<ResponseDTO> getAccountByUsername(@PathVariable("username") String username){
         AccountDTO result = accountService.getAccountByUserName(username);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/account/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AccountDTO> updateAccount(@PathVariable("username") String username, 
+    public ResponseEntity<ResponseDTO> updateAccount(@PathVariable("username") String username, 
                                                     @RequestBody AccountDTO dto)
     {
         AccountDTO result = accountService.updateCustomerAccountByAdmin(username, dto);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getUPDATE_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/account/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteCustomerAccount(@PathVariable("username") String username){
+    public ResponseEntity<ResponseDTO> deleteCustomerAccount(@PathVariable("username") String username){
         String message = accountService.deleteCustomerAccountByAdmin(username);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getDELETE_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/account/restore/{username}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> restoreAccount(@PathVariable("username") String username){
+    public ResponseEntity<ResponseDTO> restoreAccount(@PathVariable("username") String username){
         String message = accountService.restoreCustomerAccount(username);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getRESTORE_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }     
 
     @GetMapping("/account/customer")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ListAccountPagingDTO> getAllCustomerAccountsNoDelete(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllCustomerAccountsNoDelete(@RequestParam int page){
+        ResponseDTO response = new ResponseDTO();
         ListAccountPagingDTO result = accountService.getAllCustomerAccountsNoDelete(page);
-        return ResponseEntity.ok(result);
+        response.setSuccessCode(successCode.getLOAD_ACCOUNT_SUCCESS());
+        response.setDatas(result);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/account/ad")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ListAccountPagingDTO> getAllAdminAccountsNoDelete(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllAdminAccountsNoDelete(@RequestParam int page){
         ListAccountPagingDTO result = accountService.getAllAdminAccountsNoDelete(page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setSuccessCode(successCode.getLOAD_ACCOUNT_SUCCESS());
+        response.setDatas(result);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/account")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ListAccountPagingDTO> getCustomerAccountsNoDeleteBySearch(@RequestParam String value, 
+    public ResponseEntity<ResponseDTO> getCustomerAccountsNoDeleteBySearch(@RequestParam String value, 
                                                                                     @RequestParam int page)
     {
         ListAccountPagingDTO result = accountService.getCustomerAccountsNoDeleteBySearch(value, page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/account/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ListAccountPagingDTO> getAllAccountsDeleted(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllAccountsDeleted(@RequestParam int page){
         ListAccountPagingDTO result = accountService.getAllAccountsDeleted(page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_ACCOUNT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
     /** END: ACCOUNT */
 }

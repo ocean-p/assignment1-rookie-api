@@ -53,22 +53,26 @@ public class CartService implements ICartService {
         if(accountEntity.isDeleted()){
             throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
+        try{
+            Pageable pageable = PageRequest.of(pageNo - 1, 4, Sort.by(valueSort).descending());
+            Page<CartEntity> page = cartRepository.findByAccount(accountEntity, pageable);
+            List<CartEntity> list = cartRepository.findByAccount(accountEntity);
+            
+            int totalPrice = 0;
+            int totalQuantity = 0;
+            for (CartEntity cartEntity : list) {
+                totalPrice += cartEntity.getProduct().getPrice() * cartEntity.getQuantity();
+                totalQuantity += cartEntity.getQuantity();
+            }
 
-        Pageable pageable = PageRequest.of(pageNo - 1, 4, Sort.by(valueSort).descending());
-        Page<CartEntity> page = cartRepository.findByAccount(accountEntity, pageable);
-        List<CartEntity> list = cartRepository.findByAccount(accountEntity);
-        
-        int totalPrice = 0;
-        int totalQuantity = 0;
-        for (CartEntity cartEntity : list) {
-            totalPrice += cartEntity.getProduct().getPrice() * cartEntity.getQuantity();
-            totalQuantity += cartEntity.getQuantity();
+            CartPagingDTO result = cartPagingConvert.convert(pageNo, page);
+            result.setTotalPrice(totalPrice);
+            result.setTotalQuantity(totalQuantity);
+            return result;
         }
-
-        CartPagingDTO result = cartPagingConvert.convert(pageNo, page);
-        result.setTotalPrice(totalPrice);
-        result.setTotalQuantity(totalQuantity);
-        return result;
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getCART_ERR());
+        }
     }
 
     @Override
@@ -141,8 +145,13 @@ public class CartService implements ICartService {
         if(accountEntity.isDeleted()){
             throw new ApiRequestException(errorCode.getACCOUNT_IS_DISABLED());
         }
-        cartRepository.deleteById(cartId);
-        return "Delete cart item successfully!";
+        try{
+            cartRepository.deleteById(cartId);
+            return "Delete cart item successfully!";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getCART_ERR());
+        }
     }
 
     @Override
@@ -158,12 +167,16 @@ public class CartService implements ICartService {
         if(cartEntityList.size() == 0){
             throw new ApiRequestException(errorCode.getNO_ITEM_IN_CART());
         }
-        
-        for (CartEntity cartEntity : cartEntityList) {
-            cartRepository.delete(cartEntity);
-        }
+        try{
+            for (CartEntity cartEntity : cartEntityList) {
+                cartRepository.delete(cartEntity);
+            }
 
-        return "Success to delete all items in cart!";
+            return "Success to delete all items in cart!";
+        }
+        catch(Exception e) {
+            throw new ApiRequestException(errorCode.getCART_ERR());
+        }
     }
 
     @Override
@@ -200,10 +213,14 @@ public class CartService implements ICartService {
         if(quantity > available){
             throw new ApiRequestException(errorCode.getQUANTITY_GREATER_THAN_AVAILABLE());
         }
-
-        CartEntity cartEntity = cartOption.get();
-        cartEntity.setQuantity(quantity);
-        cartRepository.save(cartEntity);
-        return "Success to update quantity in cart";
+        try{
+            CartEntity cartEntity = cartOption.get();
+            cartEntity.setQuantity(quantity);
+            cartRepository.save(cartEntity);
+            return "Success to update quantity in cart";
+        }
+        catch (Exception e) {
+            throw new ApiRequestException(errorCode.getCART_ERR());
+        }
     }
 }
