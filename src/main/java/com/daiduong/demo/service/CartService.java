@@ -58,7 +58,7 @@ public class CartService implements ICartService {
             Page<CartEntity> page = cartRepository.findByAccount(accountEntity, pageable);
             List<CartEntity> list = cartRepository.findByAccount(accountEntity);
             
-            int totalPrice = 0;
+            float totalPrice = 0;
             int totalQuantity = 0;
             for (CartEntity cartEntity : list) {
                 totalPrice += cartEntity.getProduct().getPrice() * cartEntity.getQuantity();

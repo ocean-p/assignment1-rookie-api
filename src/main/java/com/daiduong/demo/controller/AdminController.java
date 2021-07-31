@@ -48,139 +48,193 @@ public class AdminController {
     /** BEGIN: CATEGORY */
     @GetMapping("/category/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> getCategoryById(@PathVariable("id") int id){
         CategoryDTO dto = categoryService.getCategoryById(id);
-        return ResponseEntity.ok(dto);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(dto);
+        response.setSuccessCode(successCode.getLOAD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/category")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryDTO> addCategory(@RequestBody CategoryDTO dto) {
+    public ResponseEntity<ResponseDTO> addCategory(@RequestBody CategoryDTO dto) {
         CategoryDTO categoryDTO = categoryService.addCategory(dto);
-        return ResponseEntity.ok(categoryDTO);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(categoryDTO);
+        response.setSuccessCode(successCode.getADD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/category/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable("id") int id,
+    public ResponseEntity<ResponseDTO> updateCategory(@PathVariable("id") int id,
                                                     @RequestBody CategoryDTO dto)
     {   CategoryDTO categoryDTO = categoryService.updateCategory(id, dto);
-        return ResponseEntity.ok(categoryDTO);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(categoryDTO);
+        response.setSuccessCode(successCode.getUPDATE_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
     
     @DeleteMapping("/category/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteCategory(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> deleteCategory(@PathVariable("id") int id){
         String message = categoryService.deleteCategory(id);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getDELETE_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/category/restore/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> restoreCategory(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> restoreCategory(@PathVariable("id") int id){
         String message = categoryService.restoreCategory(id);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getRESTORE_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryPagingDTO> getAllCategoriesNoDelete(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllCategoriesNoDelete(@RequestParam int page){
         CategoryPagingDTO result = categoryService.getAllCategoriesNoDelete(page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryPagingDTO> getAllCategoriesDeleted(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllCategoriesDeleted(@RequestParam int page){
         CategoryPagingDTO result = categoryService.getAllCategoriesDeleted(page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CategoryPagingDTO> searchCategoryNoDeleted(@RequestParam String value, 
-                                                                     @RequestParam  int page)
+    public ResponseEntity<ResponseDTO> searchCategoryNoDeleted(@RequestParam String value, 
+                                                               @RequestParam  int page)
     {
         CategoryPagingDTO result = categoryService.searchCategoryNoDeleted(value, page);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/category/list")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<CategoryDTO>> getCategoryMenu(){
+    public ResponseEntity<ResponseDTO> getCategoryMenu(){
         List<CategoryDTO> result = categoryService.getCategoryMenu();
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_CATEGORY_SUCCESS());
+        return ResponseEntity.ok(response);
     }
     /** END: CATEGORY */
 
     /** BEGIN: PRODUCT */
     @PostMapping("/product")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody ProductDTO dto){
+    public ResponseEntity<ResponseDTO> addProduct(@RequestBody ProductDTO dto){
         ProductDTO result = productService.addProduct(dto);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getADD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/product/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductDTO> updateProduct(@PathVariable("id") int id, 
+    public ResponseEntity<ResponseDTO> updateProduct(@PathVariable("id") int id, 
                                                     @RequestBody ProductDTO dto)
     {
         ProductDTO result = productService.updateProduct(id, dto);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getUPDATE_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/product/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> deleteProduct(@PathVariable("id") int id){
         String message = productService.deleteProduct(id);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getDELETE_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/product/restore/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> restoreProduct(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> restoreProduct(@PathVariable("id") int id){
         String message = productService.restoreProduct(id);
-        return ResponseEntity.ok(message);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(message);
+        response.setSuccessCode(successCode.getRESTORE_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/product")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductPagingDTO> getAllProductsNoDelete(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllProductsNoDelete(@RequestParam int page){
         ProductPagingDTO result = productService.getAllProductsNoDelete(page, "updateDate");
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/product/deleted")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductPagingDTO> getAllProductsDeleted(@RequestParam int page){
+    public ResponseEntity<ResponseDTO> getAllProductsDeleted(@RequestParam int page){
         ProductPagingDTO result = productService.getAllProductsDeleted(page, "updateDate");
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/product/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductPagingDTO> searchProductNoDeleteByName(@RequestParam String value, 
+    public ResponseEntity<ResponseDTO> searchProductNoDeleteByName(@RequestParam String value, 
                                                                         @RequestParam int page)
     {
         ProductPagingDTO result = productService.searchProductNoDeleteByName(value, page, "updateDate");
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/product/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductDTO> getProductById(@PathVariable("id") int id){
+    public ResponseEntity<ResponseDTO> getProductById(@PathVariable("id") int id){
         ProductDTO result = productService.getProductById(id);
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/product/category")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ProductPagingDTO> getProductNoDeleteByCategory(@RequestParam int id, 
+    public ResponseEntity<ResponseDTO> getProductNoDeleteByCategory(@RequestParam int id, 
                                                         @RequestParam int page)
     {
         ProductPagingDTO result = productService.getProductNoDeleteByCategory(id, page, "updateDate");
-        return ResponseEntity.ok(result);
+        ResponseDTO response = new ResponseDTO();
+        response.setDatas(result);
+        response.setSuccessCode(successCode.getLOAD_PRODUCT_SUCCESS());
+        return ResponseEntity.ok(response);
     }                                                    
     /** END: PRODUCT */
 
