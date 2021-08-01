@@ -24,4 +24,7 @@ public class ProductDTO {
     private LocalDate updateDate;
     private int categoryId;
     private boolean isDeleted;
+    private String image2;
+    private String image3;
+    private String image4;
 }

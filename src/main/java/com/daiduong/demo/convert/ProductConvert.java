@@ -18,6 +18,9 @@ public class ProductConvert {
         entity.setImage(product.getImage());
         entity.setQuantity(product.getQuantity());
         entity.setDescription(product.getDescription());
+        entity.setImage2(product.getImage2());
+        entity.setImage3(product.getImage3());
+        entity.setImage4(product.getImage4());
         return entity;
     }
 
@@ -34,6 +37,9 @@ public class ProductConvert {
         dto.setUpdateDate(entity.getUpdateDate());
         dto.setCategoryId(entity.getCategory().getId());
         dto.setDeleted(entity.isDeleted());
+        dto.setImage2(entity.getImage2());
+        dto.setImage3(entity.getImage3());
+        dto.setImage4(entity.getImage4());
         return dto;
     }
 

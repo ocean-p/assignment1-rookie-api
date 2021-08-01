@@ -47,6 +47,9 @@ public class ProductService implements IProductService {
         int quantity = product.getQuantity();
         int categoryId = product.getCategoryId();
         String img = product.getImage();
+        String img2 = product.getImage2();
+        String img3 = product.getImage3();
+        String img4 = product.getImage4();
 
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
             .orElseThrow(() -> new ApiRequestException(errorCode.getCATEGORY_NOT_FOUND()));
@@ -60,6 +63,18 @@ public class ProductService implements IProductService {
         }
 
         if(img == null || img.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+
+        if(img2 == null || img2.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+
+        if(img3 == null || img3.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+
+        if(img4 == null || img4.trim().length() == 0){
             throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
 
@@ -120,11 +135,23 @@ public class ProductService implements IProductService {
         String newDes = product.getDescription();
         float newPrice = product.getPrice();
         int newQuantity = product.getQuantity();
+        String newImg2 = product.getImage2();
+        String newImg3 = product.getImage3();
+        String newImg4 = product.getImage4();
 
         if(newName == null || newName.trim().length() == 0){
             throw new ApiRequestException(errorCode.getNAME_IS_EMPTY());
         }
         if(newImg == null || newImg.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+        if(newImg2 == null || newImg2.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+        if(newImg3 == null || newImg3.trim().length() == 0){
+            throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
+        }
+        if(newImg4 == null || newImg4.trim().length() == 0){
             throw new ApiRequestException(errorCode.getIMAGEURL_IS_EMPTY());
         }
         if(newDes == null || newDes.trim().length() == 0){
@@ -145,6 +172,9 @@ public class ProductService implements IProductService {
         try{
             productEntity.setName(newName);
             productEntity.setImage(newImg);
+            productEntity.setImage2(newImg2);
+            productEntity.setImage3(newImg3);
+            productEntity.setImage4(newImg4);
             productEntity.setDescription(newDes);
             productEntity.setPrice(newPrice);
             productEntity.setQuantity(newQuantity);

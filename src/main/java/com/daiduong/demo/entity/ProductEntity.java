@@ -67,6 +67,15 @@ public class ProductEntity {
     @Column(name = "is_delete")
     private boolean isDeleted;
 
+    @Column(name = "img_2")
+    private String image2;
+
+    @Column(name = "img_3")
+    private String image3;
+
+    @Column(name = "img_4")
+    private String image4;
+
     @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<RatingEntity> ratingEntityList;
 

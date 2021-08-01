@@ -113,13 +113,7 @@ public class AccountService implements IAccountService {
         String newFullName = newAccount.getFullName();
         String newPhone = newAccount.getPhone();
         String newAddress = newAccount.getAddress();
-        String newPassword = newAccount.getPassword();
         String newRole = newAccount.getRole();
-
-        if (newPassword == null || !newPassword.trim().matches("^[0-9A-Za-z]+$") || newPassword.trim().length() < 6
-                || newPassword.trim().length() > 20) {
-            throw new ApiRequestException(errorCode.getPASSWORD_NOT_CORRECT_FORMAT());
-        }
 
         if (newFullName == null || newFullName.trim().length() == 0) {
             throw new ApiRequestException(errorCode.getFULLNAME_IS_EMPTY());
@@ -142,7 +136,6 @@ public class AccountService implements IAccountService {
             oldAccount.setFullName(newFullName);
             oldAccount.setPhone(newPhone);
             oldAccount.setAddress(newAddress);
-            oldAccount.setPassword(passwordEncoder.encode(newPassword));
             oldAccount.setRole("ROLE_" + newRole.toUpperCase());
             oldAccount.setUpdateDate(LocalDate.now());
             oldAccount = accountRepository.save(oldAccount);
